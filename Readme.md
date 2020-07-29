@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Егор Тумаков](https://up.htmlacademy.ru/ecmascript/12/user/301675).
-* Наставник: `Неизвестно`.
+* Наставник: [Владимир Коршунов](https://htmlacademy.ru/profile/bekobou).
 
 ---
 
