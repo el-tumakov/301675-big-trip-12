@@ -9,7 +9,7 @@ const TYPES = [
   `Transport`,
   `Drive`,
   `Flight`,
-  `Check`,
+  `Check-in`,
   `Sightseeing`,
   `Restaurant`
 ];
@@ -62,13 +62,13 @@ const PointPrice = {
 };
 
 const Offer = {
-  Taxi: [
+  taxi: [
     {
       title: `Order Uber`,
       price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX)
     }
   ],
-  Flight: [
+  flight: [
     {
       title: `Add luggage`,
       price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX)
@@ -78,19 +78,19 @@ const Offer = {
       price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX)
     }
   ],
-  Drive: [
+  drive: [
     {
       title: `Rent a car`,
       price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX)
     }
   ],
-  Check: [
+  check: [
     {
       title: `Add breakfast`,
       price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX)
     }
   ],
-  Sightseeing: [
+  sightseeing: [
     {
       title: `Book tickets`,
       price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX)
@@ -112,6 +112,8 @@ const generateCity = () => {
 
 const generateOffers = (type) => {
   let offers = [];
+
+  type = type.toLowerCase().split(`-`)[0];
 
   if (Offer[type]) {
     const quantity = getRandomInteger(0, Offer[type].length);
