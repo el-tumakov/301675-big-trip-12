@@ -6,8 +6,11 @@ import {createSortTemplate} from "./view/sort.js";
 import {createDayTemplate} from "./view/day.js";
 import {createEventFormTemplate} from "./view/event-form.js";
 import {createEventPointTemplate} from "./view/event-point.js";
+import {generateEventPoint} from "./mock/event-point.js";
 
-const EVENTS_COUNT = 3;
+const EVENTS_COUNT = 25;
+
+const events = new Array(EVENTS_COUNT).fill().map(generateEventPoint);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -42,5 +45,5 @@ const eventsListElement = mainElement.querySelector(`.trip-events__list`);
 render(eventsListElement, createEventFormTemplate(), `beforeend`);
 
 for (let i = 0; i < EVENTS_COUNT; i++) {
-  render(eventsListElement, createEventPointTemplate(), `beforeend`);
+  render(eventsListElement, createEventPointTemplate(events[i]), `beforeend`);
 }
