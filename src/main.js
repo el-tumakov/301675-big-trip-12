@@ -23,7 +23,7 @@ render(tripMainElement, createTripInfoTemplate(events), `afterbegin`);
 
 const tripInfoElement = siteHeaderElement.querySelector(`.trip-info`);
 
-render(tripInfoElement, createTripPriceTemplate(), `beforeend`);
+render(tripInfoElement, createTripPriceTemplate(events), `beforeend`);
 
 const tripControlsElement = siteHeaderElement.querySelector(`.trip-controls`);
 const menuTitleElement = tripControlsElement.querySelector(`h2`);
