@@ -19,7 +19,7 @@ const render = (container, template, place) => {
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripMainElement = siteHeaderElement.querySelector(`.trip-main`);
 
-render(tripMainElement, createTripInfoTemplate(), `afterbegin`);
+render(tripMainElement, createTripInfoTemplate(events), `afterbegin`);
 
 const tripInfoElement = siteHeaderElement.querySelector(`.trip-info`);
 
