@@ -61,7 +61,7 @@ const PointPrice = {
   MAX: 600
 };
 
-const Offer = {
+export const Offer = {
   taxi: [
     {
       title: `Order Uber`,
@@ -75,6 +75,18 @@ const Offer = {
     },
     {
       title: `Switch to comfort`,
+      price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX)
+    },
+    {
+      title: `Add meal`,
+      price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX)
+    },
+    {
+      title: `Choose seats`,
+      price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX)
+    },
+    {
+      title: `Travel by train`,
       price: getRandomInteger(OfferPrice.MIN, OfferPrice.MAX)
     }
   ],

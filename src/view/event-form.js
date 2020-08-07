@@ -1,4 +1,76 @@
-export const createEventFormTemplate = () => {
+import {transformPreposition} from "../utils.js";
+import {Offer} from "../mock/event-point.js";
+
+const humanizeDate = (date) => {
+  const year = date
+    .getFullYear()
+    .toLocaleString()
+    .slice(3);
+
+  return date.toLocaleDateString(`en-GB`)
+    .slice(0, -4) +
+    year +
+    ` ` +
+    date.toLocaleTimeString()
+    .slice(0, -3);
+};
+
+const getOfferLabel = (offer) => {
+  let split = offer.title.split(` `);
+
+  return split[split.length - 1];
+};
+
+const createOfferTemplate = (offer, check) => {
+  return (
+    `<div class="event__offer-selector">
+      <input class="event__offer-checkbox visually-hidden" id="event-offer-${getOfferLabel(offer)}-1" type="checkbox" name="event-offer-${getOfferLabel(offer)}" ${check}>
+      <label class="event__offer-label" for="event-offer-${getOfferLabel(offer)}-1">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;
+      &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+      </label>
+    </div>`
+  );
+};
+
+const addOfferTemplate = (type, event) => {
+  const {offers} = event;
+
+  type = type.toLowerCase().split(`-`)[0];
+
+  let offersAll = [];
+
+  if (Offer[type]) {
+    for (let i = 0; i < Offer[type].length; i++) {
+      let check = ``;
+
+      if (offers && offers[i] === Offer[type][i]) {
+        check = `checked`;
+      }
+
+      offersAll.push(createOfferTemplate(Offer[type][i], check));
+    }
+  }
+
+  return offersAll.join(``);
+};
+
+export const createEventFormTemplate = (event) => {
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0).toString();
+
+  const {
+    type = `Taxi`,
+    city = ``,
+    time = {
+      start: today,
+      end: today
+    },
+    price = ``
+  } = event;
+
   return (
     `<li class="trip-events__item">
       <form class="event  event--edit" action="#" method="post">
@@ -6,7 +78,7 @@ export const createEventFormTemplate = () => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -73,9 +145,9 @@ export const createEventFormTemplate = () => {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              Flight to
+            ${type} ${transformPreposition(type)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Chamonix" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
             <datalist id="destination-list-1">
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
@@ -87,12 +159,12 @@ export const createEventFormTemplate = () => {
             <label class="visually-hidden" for="event-start-time-1">
               From
             </label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 12:25">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeDate(time.start)}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
             </label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 13:35">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeDate(time.end)}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -100,7 +172,7 @@ export const createEventFormTemplate = () => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="160">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -124,50 +196,7 @@ export const createEventFormTemplate = () => {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-                <label class="event__offer-label" for="event-offer-luggage-1">
-                  <span class="event__offer-title">Add luggage</span>
-                  &plus;
-                  &euro;&nbsp;<span class="event__offer-price">30</span>
-                </label>
-              </div>
-
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" checked>
-                <label class="event__offer-label" for="event-offer-comfort-1">
-                  <span class="event__offer-title">Switch to comfort class</span>
-                  &plus;
-                  &euro;&nbsp;<span class="event__offer-price">100</span>
-                </label>
-              </div>
-
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal">
-                <label class="event__offer-label" for="event-offer-meal-1">
-                  <span class="event__offer-title">Add meal</span>
-                  &plus;
-                  &euro;&nbsp;<span class="event__offer-price">15</span>
-                </label>
-              </div>
-
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox" name="event-offer-seats">
-                <label class="event__offer-label" for="event-offer-seats-1">
-                  <span class="event__offer-title">Choose seats</span>
-                  &plus;
-                  &euro;&nbsp;<span class="event__offer-price">5</span>
-                </label>
-              </div>
-
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox" name="event-offer-train">
-                <label class="event__offer-label" for="event-offer-train-1">
-                  <span class="event__offer-title">Travel by train</span>
-                  &plus;
-                  &euro;&nbsp;<span class="event__offer-price">40</span>
-                </label>
-              </div>
+              ${addOfferTemplate(type, event)}
             </div>
           </section>
         </section>
