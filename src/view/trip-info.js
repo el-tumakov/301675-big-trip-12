@@ -1,4 +1,5 @@
 import {getMonthString} from "../utils.js";
+import {isEmpty} from "../utils.js";
 
 export const createTripInfoTemplate = (events) => {
   let monthStart = ``;
@@ -7,7 +8,7 @@ export const createTripInfoTemplate = (events) => {
   let dayEnd = ``;
   let checkMonth = () => ``;
 
-  if (events[0].time !== undefined) {
+  if (!isEmpty(events[0])) {
     events.sort((a, b) => a.time.start - b.time.start);
 
     monthStart = getMonthString(events[0].time.start);

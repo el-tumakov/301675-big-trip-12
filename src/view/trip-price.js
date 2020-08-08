@@ -1,7 +1,9 @@
+import {isEmpty} from "../utils.js";
+
 export const createTripPriceTemplate = (events) => {
   let sum = 0;
 
-  if (events[0].price !== undefined) {
+  if (!isEmpty(events[0])) {
     events.forEach((item) => {
       item.offers.forEach((offer) => {
         sum += offer.price;

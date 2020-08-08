@@ -7,6 +7,7 @@ import {createDayTemplate} from "./view/day.js";
 import {createEventFormTemplate} from "./view/event-form.js";
 import {createEventPointTemplate} from "./view/event-point.js";
 import {generateEventPoint} from "./mock/event-point.js";
+import {isEmpty} from "./utils.js";
 
 const EVENTS_COUNT = 25;
 
@@ -34,16 +35,24 @@ render(tripControlsElement, createFilterTemplate(), `beforeend`);
 const mainElement = document.querySelector(`.page-main`);
 const tripEventsElement = mainElement.querySelector(`.trip-events`);
 
-render(tripEventsElement, createSortTemplate(), `beforeend`);
+if (!isEmpty(events[0])) {
+  render(tripEventsElement, createSortTemplate(), `beforeend`);
 
-const tripDaysElement = mainElement.querySelector(`.trip-days`);
+  const tripDaysElement = mainElement.querySelector(`.trip-days`);
 
-render(tripDaysElement, createDayTemplate(events), `beforeend`);
+  render(tripDaysElement, createDayTemplate(events), `beforeend`);
 
-const eventsListElement = mainElement.querySelector(`.trip-events__list`);
+  const eventsListElement = mainElement.querySelector(`.trip-events__list`);
 
-render(eventsListElement, createEventFormTemplate(events[0]), `beforeend`);
+  render(eventsListElement, createEventFormTemplate(events[0]), `beforeend`);
 
-for (let i = 1; i < EVENTS_COUNT; i++) {
-  render(eventsListElement, createEventPointTemplate(events[i]), `beforeend`);
+  for (let i = 1; i < EVENTS_COUNT; i++) {
+    render(eventsListElement, createEventPointTemplate(events[i]), `beforeend`);
+  }
+} else {
+  render(tripEventsElement, createEventFormTemplate(events[0]), `beforeend`);
+
+  const eventFormElement = tripEventsElement.querySelector(`.event`);
+
+  eventFormElement.classList.add(`trip-events__item`);
 }
