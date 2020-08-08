@@ -1,5 +1,4 @@
-import {transformPreposition} from "../utils.js";
-import {isEmpty} from "../utils.js";
+import {transformPreposition, isEmpty} from "../utils.js";
 
 const MAX_OFFERS = 3;
 

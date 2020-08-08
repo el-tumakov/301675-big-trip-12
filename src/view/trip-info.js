@@ -1,5 +1,4 @@
-import {getMonthString} from "../utils.js";
-import {isEmpty} from "../utils.js";
+import {getMonthString, isEmpty} from "../utils.js";
 
 export const createTripInfoTemplate = (events) => {
   let monthStart = ``;

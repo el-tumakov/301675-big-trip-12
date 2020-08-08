@@ -47,7 +47,14 @@ if (!isEmpty(events[0])) {
   render(eventsListElement, createEventFormTemplate(events[0]), `beforeend`);
 
   for (let i = 1; i < EVENTS_COUNT; i++) {
-    render(eventsListElement, createEventPointTemplate(events[i]), `beforeend`);
+    const {time} = events[i];
+    const timeISO = time.start.toISOString().slice(0, -14);
+    const timeElement = tripDaysElement
+      .querySelector(`.day .day__date[datetime="${timeISO}"]`);
+    const dayElement = timeElement.closest(`.day`);
+    const pointsListElement = dayElement.querySelector(`.trip-events__list`);
+
+    render(pointsListElement, createEventPointTemplate(events[i]), `beforeend`);
   }
 } else {
   render(tripEventsElement, createEventFormTemplate(events[0]), `beforeend`);
