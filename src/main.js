@@ -38,7 +38,7 @@ render(tripEventsElement, createSortTemplate(), `beforeend`);
 
 const tripDaysElement = mainElement.querySelector(`.trip-days`);
 
-render(tripDaysElement, createDayTemplate(), `beforeend`);
+render(tripDaysElement, createDayTemplate(events), `beforeend`);
 
 const eventsListElement = mainElement.querySelector(`.trip-events__list`);
 

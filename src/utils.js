@@ -38,3 +38,11 @@ export const isEmpty = (value) => {
   }
   return true;
 };
+
+export const getMonthString = (date) => {
+  let month = date.toLocaleString(`en-GB`, {
+    month: `long`
+  });
+
+  return month.toUpperCase().slice(0, 3);
+};

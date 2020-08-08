@@ -1,3 +1,5 @@
+import {getMonthString} from "../utils.js";
+
 export const createTripInfoTemplate = (events) => {
   let monthStart = ``;
   let monthEnd = ``;
@@ -7,14 +9,6 @@ export const createTripInfoTemplate = (events) => {
 
   if (events[0].time !== undefined) {
     events.sort((a, b) => a.time.start - b.time.start);
-
-    const getMonthString = (date) => {
-      let month = date.toLocaleString(`en-GB`, {
-        month: `long`
-      });
-
-      return month.toUpperCase().slice(0, 3);
-    };
 
     monthStart = getMonthString(events[0].time.start);
     monthEnd = getMonthString(
