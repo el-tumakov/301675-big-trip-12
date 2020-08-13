@@ -9,7 +9,35 @@ const Preposition = {
   IN: `in`
 };
 
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};
+
 const {TO, IN} = Preposition;
+const {AFTERBEGIN, BEFOREEND} = RenderPosition;
+
+export const renderElement = (container, element, place) => {
+  switch (place) {
+    case AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+export const renderTemplate = (container, template, place) => {
+  container.insertAdjacentHTML(place, template);
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
 
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
