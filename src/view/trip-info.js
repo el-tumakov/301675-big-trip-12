@@ -1,4 +1,4 @@
-import {getMonthString, isEmpty} from "../utils.js";
+import {getMonthString} from "../utils.js";
 
 export const createTripInfoTemplate = (events) => {
   let monthStart = ``;
@@ -7,22 +7,20 @@ export const createTripInfoTemplate = (events) => {
   let dayEnd = ``;
   let checkMonth = () => ``;
 
-  if (!isEmpty(events[0])) {
-    monthStart = getMonthString(events[0].time.start);
-    monthEnd = getMonthString(
-        events[events.length - 1]
-        .time.end);
-    dayStart = events[0].time.start.getDate() + `&nbsp;&mdash;&nbsp;`;
-    dayEnd = events[events.length - 1].time.end.getDate();
+  monthStart = getMonthString(events[0].time.start);
+  monthEnd = getMonthString(
+      events[events.length - 1]
+      .time.end);
+  dayStart = events[0].time.start.getDate() + `&nbsp;&mdash;&nbsp;`;
+  dayEnd = events[events.length - 1].time.end.getDate();
 
-    checkMonth = () => {
-      if (monthStart === monthEnd) {
-        return ``;
-      }
+  checkMonth = () => {
+    if (monthStart === monthEnd) {
+      return ``;
+    }
 
-      return monthEnd + ` `;
-    };
-  }
+    return monthEnd + ` `;
+  };
 
   const getCities = () => {
     let cities = [];

@@ -7,7 +7,6 @@ import {createDayTemplate} from "./view/day.js";
 import {createEventFormTemplate} from "./view/event-form.js";
 import {createEventPointTemplate} from "./view/event-point.js";
 import {generateEventPoint} from "./mock/event-point.js";
-import {isEmpty} from "./utils.js";
 
 const EVENTS_COUNT = 25;
 
@@ -36,31 +35,23 @@ render(tripControlsElement, createFilterTemplate(), `beforeend`);
 const mainElement = document.querySelector(`.page-main`);
 const tripEventsElement = mainElement.querySelector(`.trip-events`);
 
-if (!isEmpty(events[0])) {
-  render(tripEventsElement, createSortTemplate(), `beforeend`);
+render(tripEventsElement, createSortTemplate(), `beforeend`);
 
-  const tripDaysElement = mainElement.querySelector(`.trip-days`);
+const tripDaysElement = mainElement.querySelector(`.trip-days`);
 
-  render(tripDaysElement, createDayTemplate(sortEvents), `beforeend`);
+render(tripDaysElement, createDayTemplate(sortEvents), `beforeend`);
 
-  const eventsListElement = mainElement.querySelector(`.trip-events__list`);
+const eventsListElement = mainElement.querySelector(`.trip-events__list`);
 
-  render(eventsListElement, createEventFormTemplate(events[0]), `beforeend`);
+render(eventsListElement, createEventFormTemplate(events[0]), `beforeend`);
 
-  for (let i = 1; i < EVENTS_COUNT; i++) {
-    const {time} = events[i];
-    const timeISO = time.start.toISOString().slice(0, -14);
-    const timeElement = tripDaysElement
-      .querySelector(`.day .day__date[datetime="${timeISO}"]`);
-    const dayElement = timeElement.closest(`.day`);
-    const pointsListElement = dayElement.querySelector(`.trip-events__list`);
+for (let i = 1; i < EVENTS_COUNT; i++) {
+  const {time} = events[i];
+  const timeISO = time.start.toISOString().slice(0, -14);
+  const timeElement = tripDaysElement
+    .querySelector(`.day .day__date[datetime="${timeISO}"]`);
+  const dayElement = timeElement.closest(`.day`);
+  const pointsListElement = dayElement.querySelector(`.trip-events__list`);
 
-    render(pointsListElement, createEventPointTemplate(events[i]), `beforeend`);
-  }
-} else {
-  render(tripEventsElement, createEventFormTemplate(events[0]), `beforeend`);
-
-  const eventFormElement = tripEventsElement.querySelector(`.event`);
-
-  eventFormElement.classList.add(`trip-events__item`);
+  render(pointsListElement, createEventPointTemplate(events[i]), `beforeend`);
 }

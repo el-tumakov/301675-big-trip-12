@@ -30,15 +30,6 @@ export const transformPreposition = (type) => {
   return TO;
 };
 
-export const isEmpty = (value) => {
-  for (let key in value) {
-    if (hasOwnProperty.call(value, key)) {
-      return false;
-    }
-  }
-  return true;
-};
-
 export const getMonthString = (date) => {
   let month = date.toLocaleString(`en-GB`, {
     month: `long`
