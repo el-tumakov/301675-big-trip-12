@@ -17,7 +17,7 @@ export const RenderPosition = {
 const {TO, IN} = Preposition;
 const {AFTERBEGIN, BEFOREEND} = RenderPosition;
 
-export const renderElement = (container, element, place) => {
+export const render = (container, element, place) => {
   switch (place) {
     case AFTERBEGIN:
       container.prepend(element);
