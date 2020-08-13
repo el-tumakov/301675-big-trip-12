@@ -12,6 +12,7 @@ import {isEmpty} from "./utils.js";
 const EVENTS_COUNT = 25;
 
 const events = new Array(EVENTS_COUNT).fill().map(generateEventPoint);
+const sortEvents = events.sort((a, b) => a.time.start - b.time.start);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -20,11 +21,11 @@ const render = (container, template, place) => {
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripMainElement = siteHeaderElement.querySelector(`.trip-main`);
 
-render(tripMainElement, createTripInfoTemplate(events), `afterbegin`);
+render(tripMainElement, createTripInfoTemplate(sortEvents), `afterbegin`);
 
 const tripInfoElement = siteHeaderElement.querySelector(`.trip-info`);
 
-render(tripInfoElement, createTripPriceTemplate(events), `beforeend`);
+render(tripInfoElement, createTripPriceTemplate(sortEvents), `beforeend`);
 
 const tripControlsElement = siteHeaderElement.querySelector(`.trip-controls`);
 const menuTitleElement = tripControlsElement.querySelector(`h2`);
@@ -40,7 +41,7 @@ if (!isEmpty(events[0])) {
 
   const tripDaysElement = mainElement.querySelector(`.trip-days`);
 
-  render(tripDaysElement, createDayTemplate(events), `beforeend`);
+  render(tripDaysElement, createDayTemplate(sortEvents), `beforeend`);
 
   const eventsListElement = mainElement.querySelector(`.trip-events__list`);
 

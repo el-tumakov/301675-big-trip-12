@@ -8,8 +8,6 @@ export const createTripInfoTemplate = (events) => {
   let checkMonth = () => ``;
 
   if (!isEmpty(events[0])) {
-    events.sort((a, b) => a.time.start - b.time.start);
-
     monthStart = getMonthString(events[0].time.start);
     monthEnd = getMonthString(
         events[events.length - 1]

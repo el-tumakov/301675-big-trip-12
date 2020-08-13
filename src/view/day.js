@@ -2,8 +2,6 @@ import {getMonthString, isEmpty} from "../utils.js";
 
 export const createDayTemplate = (events) => {
   if (!isEmpty(events[0])) {
-    events.sort((a, b) => a.time.start - b.time.start);
-
     const dates = [];
     const dayTemplates = [];
 
