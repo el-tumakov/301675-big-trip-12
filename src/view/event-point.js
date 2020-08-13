@@ -1,4 +1,4 @@
-import {transformPreposition} from "../utils.js";
+import {transformPreposition, createElement} from "../utils.js";
 
 const MAX_OFFERS = 3;
 
@@ -55,7 +55,7 @@ const createOffersTemplate = (offers) => {
   return offer;
 };
 
-export const createEventPointTemplate = (event) => {
+const createEventPointTemplate = (event) => {
   const {type, city, offers, time, price} = event;
   const diff = time.end - time.start;
   const period = {
@@ -97,3 +97,27 @@ export const createEventPointTemplate = (event) => {
     </li>`
   );
 };
+
+export default class EventPoint {
+  constructor(event) {
+    this._element = null;
+    this._event = event;
+  }
+
+  getTemplate() {
+    return createEventPointTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

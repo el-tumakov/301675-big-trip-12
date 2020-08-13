@@ -65,3 +65,18 @@ export const getMonthString = (date) => {
 
   return month.toUpperCase().slice(0, 3);
 };
+
+export const getUniqueDates = (data) => {
+  const dates = [];
+
+  data.forEach((item) => {
+    let date = item.time.start
+      .toISOString().slice(0, -14);
+
+    if (!dates.includes(date)) {
+      dates.push(date);
+    }
+  });
+
+  return dates;
+};

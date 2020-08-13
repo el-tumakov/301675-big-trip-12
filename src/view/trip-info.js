@@ -1,6 +1,6 @@
-import {getMonthString} from "../utils.js";
+import {getMonthString, createElement} from "../utils.js";
 
-export const createTripInfoTemplate = (events) => {
+const createTripInfoTemplate = (events) => {
   let monthStart = ``;
   let monthEnd = ``;
   let dayStart = ``;
@@ -44,3 +44,26 @@ export const createTripInfoTemplate = (events) => {
     </section>`
   );
 };
+
+export default class TripInfo {
+  constructor(events) {
+    this._element = null;
+    this._events = events;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

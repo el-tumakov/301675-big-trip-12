@@ -1,15 +1,19 @@
-import {createTripInfoTemplate} from "./view/trip-info.js";
-import {createTripPriceTemplate} from "./view/trip-price.js";
-import {createSiteMenuTemplate} from "./view/site-menu.js";
-import {createFilterTemplate} from "./view/filter.js";
-import {createSortTemplate} from "./view/sort.js";
-import {createDayTemplate} from "./view/day.js";
-import {createEventFormTemplate} from "./view/event-form.js";
-import {createEventPointTemplate} from "./view/event-point.js";
+import TripInfoView from "./view/trip-info.js";
+import TripPriceView from "./view/trip-price.js";
+import TitleH2View from "./view/title-h2.js";
+import SiteMenuView from "./view/site-menu.js";
+import FilterView from "./view/filter.js";
+import SortView from "./view/sort.js";
+import TripDaysView from "./view/trip-days.js";
+import DayView from "./view/day.js";
+import EventFormView from "./view/event-form.js";
+import EventPointView from "./view/event-point.js";
 import {generateEventPoint} from "./mock/event-point.js";
-import {renderTemplate, renderElement, RenderPosition} from "./utils.js";
+import {renderElement, RenderPosition, getUniqueDates} from "./utils.js";
 
 const EVENTS_COUNT = 25;
+
+const {AFTERBEGIN, BEFOREEND} = RenderPosition;
 
 const events = new Array(EVENTS_COUNT).fill().map(generateEventPoint);
 const sortEvents = events.sort((a, b) => a.time.start - b.time.start);
@@ -17,29 +21,47 @@ const sortEvents = events.sort((a, b) => a.time.start - b.time.start);
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripMainElement = siteHeaderElement.querySelector(`.trip-main`);
 
-renderTemplate(tripMainElement, createTripInfoTemplate(sortEvents), `afterbegin`);
+renderElement(tripMainElement, new TripInfoView(sortEvents).getElement(), AFTERBEGIN);
 
 const tripInfoElement = siteHeaderElement.querySelector(`.trip-info`);
 
-renderTemplate(tripInfoElement, createTripPriceTemplate(sortEvents), `beforeend`);
+renderElement(tripInfoElement, new TripPriceView(sortEvents).getElement(), BEFOREEND);
 
 const tripControlsElement = siteHeaderElement.querySelector(`.trip-controls`);
 
-renderTemplate(tripControlsElement, createSiteMenuTemplate(), `beforeend`);
-renderTemplate(tripControlsElement, createFilterTemplate(), `beforeend`);
+renderElement(
+    tripControlsElement,
+    new TitleH2View().getElement(
+        new SiteMenuView().getTitle()
+    ),
+    BEFOREEND
+);
+renderElement(tripControlsElement, new SiteMenuView().getElement(), BEFOREEND);
+
+renderElement(
+    tripControlsElement,
+    new TitleH2View().getElement(
+        new FilterView().getTitle()
+    ),
+    BEFOREEND
+);
+renderElement(tripControlsElement, new FilterView().getElement(), BEFOREEND);
 
 const mainElement = document.querySelector(`.page-main`);
 const tripEventsElement = mainElement.querySelector(`.trip-events`);
 
-renderTemplate(tripEventsElement, createSortTemplate(), `beforeend`);
+renderElement(tripEventsElement, new SortView().getElement(), BEFOREEND);
+renderElement(tripEventsElement, new TripDaysView().getElement(), BEFOREEND);
 
 const tripDaysElement = mainElement.querySelector(`.trip-days`);
 
-renderTemplate(tripDaysElement, createDayTemplate(sortEvents), `beforeend`);
+getUniqueDates(events).forEach((item, index) => {
+  renderElement(tripDaysElement, new DayView(item, index).getElement(), BEFOREEND);
+});
 
 const eventsListElement = mainElement.querySelector(`.trip-events__list`);
 
-renderTemplate(eventsListElement, createEventFormTemplate(events[0]), `beforeend`);
+renderElement(eventsListElement, new EventFormView(events[0]).getElement(), BEFOREEND);
 
 for (let i = 1; i < EVENTS_COUNT; i++) {
   const {time} = events[i];
@@ -49,5 +71,5 @@ for (let i = 1; i < EVENTS_COUNT; i++) {
   const dayElement = timeElement.closest(`.day`);
   const pointsListElement = dayElement.querySelector(`.trip-events__list`);
 
-  renderTemplate(pointsListElement, createEventPointTemplate(events[i]), `beforeend`);
+  renderElement(pointsListElement, new EventPointView(events[i]).getElement(), BEFOREEND);
 }

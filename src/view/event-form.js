@@ -1,4 +1,4 @@
-import {transformPreposition} from "../utils.js";
+import {transformPreposition, createElement} from "../utils.js";
 import {Offer} from "../mock/event-point.js";
 
 const humanizeDate = (date) => {
@@ -56,7 +56,7 @@ const addOfferTemplate = (type, event) => {
   return offersAll.join(``);
 };
 
-export const createEventFormTemplate = (event) => {
+const createEventFormTemplate = (event) => {
   const today = new Date();
 
   today.setHours(0, 0, 0, 0).toString();
@@ -212,3 +212,26 @@ export const createEventFormTemplate = (event) => {
     </li>`
   );
 };
+
+export default class EventForm {
+  constructor(event) {
+    this._element = null;
+    this._event = event;
+  }
+
+  getTemplate() {
+    return createEventFormTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

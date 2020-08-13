@@ -1,4 +1,6 @@
-export const createTripPriceTemplate = (events) => {
+import {createElement} from "../utils.js";
+
+const createTripPriceTemplate = (events) => {
   let sum = 0;
 
   events.forEach((item) => {
@@ -15,3 +17,26 @@ export const createTripPriceTemplate = (events) => {
     </p>`
   );
 };
+
+export default class TripPrice {
+  constructor(events) {
+    this._element = null;
+    this._events = events;
+  }
+
+  getTemplate() {
+    return createTripPriceTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
