@@ -59,11 +59,31 @@ getUniqueDates(events).forEach((item, index) => {
   render(tripDaysElement, new DayView(item, index).getElement(), BEFOREEND);
 });
 
-const eventsListElement = mainElement.querySelector(`.trip-events__list`);
+const renderEvent = (eventsListElement, event) => {
+  const eventComponent = new EventPointView(event);
+  const eventEditComponent = new EventFormView(event);
 
-render(eventsListElement, new EventFormView(events[0]).getElement(), BEFOREEND);
+  const replaceEventToForm = () => {
+    eventsListElement.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+  };
 
-for (let i = 1; i < EVENTS_COUNT; i++) {
+  const replaceFormToEvent = () => {
+    eventsListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+  };
+
+  eventComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    replaceEventToForm();
+  });
+
+  eventEditComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceFormToEvent();
+  });
+
+  render(eventsListElement, eventComponent.getElement(), RenderPosition.BEFOREEND);
+};
+
+for (let i = 0; i < EVENTS_COUNT; i++) {
   const {time} = events[i];
   const timeISO = time.start.toISOString().slice(0, -14);
   const timeElement = tripDaysElement
@@ -71,5 +91,5 @@ for (let i = 1; i < EVENTS_COUNT; i++) {
   const dayElement = timeElement.closest(`.day`);
   const pointsListElement = dayElement.querySelector(`.trip-events__list`);
 
-  render(pointsListElement, new EventPointView(events[i]).getElement(), BEFOREEND);
+  renderEvent(pointsListElement, events[i]);
 }
