@@ -27,9 +27,8 @@ const tripInfoElement = siteHeaderElement.querySelector(`.trip-info`);
 render(tripInfoElement, createTripPriceTemplate(sortEvents), `beforeend`);
 
 const tripControlsElement = siteHeaderElement.querySelector(`.trip-controls`);
-const menuTitleElement = tripControlsElement.querySelector(`h2`);
 
-render(menuTitleElement, createSiteMenuTemplate(), `afterend`);
+render(tripControlsElement, createSiteMenuTemplate(), `beforeend`);
 render(tripControlsElement, createFilterTemplate(), `beforeend`);
 
 const mainElement = document.querySelector(`.page-main`);
