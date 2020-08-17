@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
 
 const createTitleH2Template = (title) => {
   return (
@@ -6,24 +6,13 @@ const createTitleH2Template = (title) => {
   );
 };
 
-export default class TitleH2 {
-  constructor() {
-    this._element = null;
+export default class TitleH2 extends AbstractView {
+  constructor(title) {
+    super();
+    this._title = title;
   }
 
-  getTemplate(title) {
-    return createTitleH2Template(title);
-  }
-
-  getElement(title) {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate(title));
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  getTemplate() {
+    return createTitleH2Template(this._title);
   }
 }

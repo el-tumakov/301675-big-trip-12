@@ -31,18 +31,14 @@ const tripControlsElement = siteHeaderElement.querySelector(`.trip-controls`);
 
 render(
     tripControlsElement,
-    new TitleH2View().getElement(
-        new SiteMenuView().getTitle()
-    ),
+    new TitleH2View(new SiteMenuView().getTitle()).getElement(),
     BEFOREEND
 );
 render(tripControlsElement, new SiteMenuView().getElement(), BEFOREEND);
 
 render(
     tripControlsElement,
-    new TitleH2View().getElement(
-        new FilterView().getTitle()
-    ),
+    new TitleH2View(new FilterView().getTitle()).getElement(),
     BEFOREEND
 );
 render(tripControlsElement, new FilterView().getElement(), BEFOREEND);
