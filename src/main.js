@@ -67,12 +67,11 @@ const renderEvent = (eventsListElement, event) => {
     eventsListElement.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
   };
 
-  eventComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+  eventComponent.setEditClickHandler(() => {
     replaceEventToForm();
   });
 
-  eventEditComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
+  eventEditComponent.setFormSubmitHandler(() => {
     replaceFormToEvent();
   });
 
