@@ -1,30 +1,26 @@
-import {getMonthString, isEmpty} from "../utils.js";
+import {getMonthString, createElement} from "../utils.js";
 
-export const createTripInfoTemplate = (events) => {
+const createTripInfoTemplate = (events) => {
   let monthStart = ``;
   let monthEnd = ``;
   let dayStart = ``;
   let dayEnd = ``;
   let checkMonth = () => ``;
 
-  if (!isEmpty(events[0])) {
-    events.sort((a, b) => a.time.start - b.time.start);
+  monthStart = getMonthString(events[0].time.start);
+  monthEnd = getMonthString(
+      events[events.length - 1]
+      .time.end);
+  dayStart = events[0].time.start.getDate() + `&nbsp;&mdash;&nbsp;`;
+  dayEnd = events[events.length - 1].time.end.getDate();
 
-    monthStart = getMonthString(events[0].time.start);
-    monthEnd = getMonthString(
-        events[events.length - 1]
-        .time.end);
-    dayStart = events[0].time.start.getDate() + `&nbsp;&mdash;&nbsp;`;
-    dayEnd = events[events.length - 1].time.end.getDate();
+  checkMonth = () => {
+    if (monthStart === monthEnd) {
+      return ``;
+    }
 
-    checkMonth = () => {
-      if (monthStart === monthEnd) {
-        return ``;
-      }
-
-      return monthEnd + ` `;
-    };
-  }
+    return monthEnd + ` `;
+  };
 
   const getCities = () => {
     let cities = [];
@@ -48,3 +44,26 @@ export const createTripInfoTemplate = (events) => {
     </section>`
   );
 };
+
+export default class TripInfo {
+  constructor(events) {
+    this._element = null;
+    this._events = events;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._events);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

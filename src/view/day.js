@@ -1,39 +1,41 @@
-import {getMonthString, isEmpty} from "../utils.js";
+import {getMonthString, createElement} from "../utils.js";
 
-export const createDayTemplate = (events) => {
-  if (!isEmpty(events[0])) {
-    events.sort((a, b) => a.time.start - b.time.start);
+const createDayTemplate = (date, counter) => {
+  const currentDate = new Date(Date.parse(date));
 
-    const dates = [];
-    const dayTemplates = [];
+  return (
+    `<li class="trip-days__item day">
+        <div class="day__info">
+          <span class="day__counter">${counter + 1}</span>
+          <time class="day__date" datetime="${date}">${getMonthString(currentDate)} ${currentDate.getDate()}</time>
+        </div>
 
-    events.forEach((item) => {
-      let date = item.time.start
-        .toISOString().slice(0, -14);
+      <ul class="trip-events__list">
+      </ul>
+    </li>`
+  );
+};
 
-      if (!dates.includes(date)) {
-        dates.push(date);
-      }
-    });
-
-    dates.forEach((item, index) => {
-      const currentDate = new Date(Date.parse(item));
-
-      dayTemplates.push(
-          `<li class="trip-days__item  day">
-            <div class="day__info">
-              <span class="day__counter">${index + 1}</span>
-              <time class="day__date" datetime="${item}">${getMonthString(currentDate)} ${currentDate.getDate()}</time>
-            </div>
-
-            <ul class="trip-events__list">
-            </ul>
-          </li>`
-      );
-    });
-
-    return dayTemplates.join(``);
+export default class Day {
+  constructor(date, counter) {
+    this._element = null;
+    this._date = date;
+    this._counter = counter;
   }
 
-  return ``;
-};
+  getTemplate() {
+    return createDayTemplate(this._date, this._counter);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
