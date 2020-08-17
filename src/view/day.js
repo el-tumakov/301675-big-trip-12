@@ -1,5 +1,5 @@
 import AbstractView from "./abstract.js";
-import {getMonthString} from "../utils.js";
+import {getMonthString} from "../utils/specific.js";
 
 const createDayTemplate = (date, counter) => {
   const currentDate = new Date(Date.parse(date));

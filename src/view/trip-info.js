@@ -1,5 +1,5 @@
 import AbstractView from "./abstract.js";
-import {getMonthString} from "../utils.js";
+import {getMonthString} from "../utils/specific.js";
 
 const createTripInfoTemplate = (events) => {
   let monthStart = ``;

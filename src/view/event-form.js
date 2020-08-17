@@ -1,5 +1,5 @@
 import AbstractView from "./abstract.js";
-import {transformPreposition} from "../utils.js";
+import {transformPreposition} from "../utils/specific.js";
 import {Offer} from "../mock/event-point.js";
 
 const humanizeDate = (date) => {

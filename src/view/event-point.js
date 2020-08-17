@@ -1,5 +1,5 @@
 import AbstractView from "./abstract.js";
-import {transformPreposition} from "../utils.js";
+import {transformPreposition} from "../utils/specific.js";
 
 const MAX_OFFERS = 3;
 
