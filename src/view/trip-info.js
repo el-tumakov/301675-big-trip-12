@@ -1,4 +1,5 @@
-import {getMonthString, createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
+import {getMonthString} from "../utils/specific.js";
 
 const createTripInfoTemplate = (events) => {
   let monthStart = ``;
@@ -45,25 +46,13 @@ const createTripInfoTemplate = (events) => {
   );
 };
 
-export default class TripInfo {
+export default class TripInfo extends AbstractView {
   constructor(events) {
-    this._element = null;
+    super();
     this._events = events;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._events);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

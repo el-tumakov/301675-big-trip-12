@@ -1,5 +1,4 @@
-import {getRandomInteger} from "../utils.js";
-import {getRandomElement} from "../utils.js";
+import {getRandomInteger, getRandomElement} from "../utils/common.js";
 
 const TYPES = [
   `Taxi`,

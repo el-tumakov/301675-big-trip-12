@@ -1,4 +1,5 @@
-import {getMonthString, createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
+import {getMonthString} from "../utils/specific.js";
 
 const createDayTemplate = (date, counter) => {
   const currentDate = new Date(Date.parse(date));
@@ -16,26 +17,14 @@ const createDayTemplate = (date, counter) => {
   );
 };
 
-export default class Day {
+export default class Day extends AbstractView {
   constructor(date, counter) {
-    this._element = null;
+    super();
     this._date = date;
     this._counter = counter;
   }
 
   getTemplate() {
     return createDayTemplate(this._date, this._counter);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

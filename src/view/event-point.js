@@ -1,4 +1,5 @@
-import {transformPreposition, createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
+import {transformPreposition} from "../utils/specific.js";
 
 const MAX_OFFERS = 3;
 
@@ -98,26 +99,24 @@ const createEventPointTemplate = (event) => {
   );
 };
 
-export default class EventPoint {
+export default class EventPoint extends AbstractView {
   constructor(event) {
-    this._element = null;
+    super();
     this._event = event;
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
     return createEventPointTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
   }
 
-  removeElement() {
-    this._element = null;
+  setEditClickHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().addEventListener(`click`, this._clickHandler);
   }
 }
-

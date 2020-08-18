@@ -1,4 +1,5 @@
-import {transformPreposition, createElement} from "../utils.js";
+import AbstractView from "./abstract.js";
+import {transformPreposition} from "../utils/specific.js";
 import {Offer} from "../mock/event-point.js";
 
 const humanizeDate = (date) => {
@@ -213,25 +214,24 @@ const createEventFormTemplate = (event) => {
   );
 };
 
-export default class EventForm {
+export default class EventForm extends AbstractView {
   constructor(event) {
-    this._element = null;
+    super();
     this._event = event;
+    this._submitHandler = this._submitHandler.bind(this);
   }
 
   getTemplate() {
     return createEventFormTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _submitHandler(evt) {
+    evt.preventDefault();
+    this._callback.submit();
   }
 
-  removeElement() {
-    this._element = null;
+  setFormSubmitHandler(callback) {
+    this._callback.submit = callback;
+    this.getElement().addEventListener(`submit`, this._submitHandler);
   }
 }
