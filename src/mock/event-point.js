@@ -60,6 +60,8 @@ const PointPrice = {
   MAX: 600
 };
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 export const Offer = {
   taxi: [
     {
@@ -184,12 +186,14 @@ export const generateEventPoint = () => {
   const type = generateType();
 
   return {
+    id: generateId(),
     type,
     city: generateCity(),
     offers: generateOffers(type),
     description: generateDescription(),
     photo: generatePhotos(),
     time: generateTime(),
-    price: generatePrice()
+    price: generatePrice(),
+    isFavorite: Boolean(getRandomInteger(0, 1))
   };
 };

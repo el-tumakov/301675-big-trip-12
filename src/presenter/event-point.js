@@ -5,13 +5,15 @@ import {render, RenderPosition, replace, remove} from "../utils/render.js";
 const {BEFOREEND} = RenderPosition;
 
 export default class Event {
-  constructor(eventsListContainer) {
+  constructor(eventsListContainer, changeData) {
     this._eventsListContainer = eventsListContainer;
+    this._changeData = changeData;
 
     this._eventComponent = null;
     this._eventFormComponent = null;
 
     this._handleEditClick = this._handleEditClick.bind(this);
+    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
   }
 
@@ -25,6 +27,7 @@ export default class Event {
     this._eventFormComponent = new EventFormView(event);
 
     this._eventComponent.setEditClickHandler(this._handleEditClick);
+    this._eventFormComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
 
     if (prevEventComponent === null || prevEventFormComponent === null) {
@@ -33,11 +36,11 @@ export default class Event {
       return;
     }
 
-    if (this._eventsListContainer.getElement().contains(prevEventComponent.getElement())) {
+    if (this._eventsListContainer.contains(prevEventComponent.getElement())) {
       replace(this._eventComponent, prevEventComponent);
     }
 
-    if (this._eventsListContainer.getElement().contains(prevEventFormComponent.getElement())) {
+    if (this._eventsListContainer.contains(prevEventFormComponent.getElement())) {
       replace(this._eventFormComponent, prevEventFormComponent);
     }
 
@@ -62,7 +65,20 @@ export default class Event {
     this._replaceEventToForm();
   }
 
-  _handleFormSubmit() {
+  _handleFavoriteClick() {
+    this._changeData(
+        Object.assign(
+            {},
+            this._event,
+            {
+              isFavorite: !this._event.isFavorite
+            }
+        )
+    );
+  }
+
+  _handleFormSubmit(event) {
+    this._changeData(event);
     this._replaceFormToEvent();
   }
 }
