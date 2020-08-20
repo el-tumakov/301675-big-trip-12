@@ -17,12 +17,19 @@ export default class Trip {
     this._tripDaysComponent = new TripDaysView();
 
     this._handleEventChange = this._handleEventChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(events) {
     this._events = events.slice();
 
     this._renderTrip();
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.resetView());
   }
 
   _handleEventChange(updatedEvent) {
@@ -51,7 +58,7 @@ export default class Trip {
   }
 
   _renderEvent(eventsListContainer, event) {
-    const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleEventChange);
+    const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleEventChange, this._handleModeChange);
 
     eventPresenter.init(event);
 

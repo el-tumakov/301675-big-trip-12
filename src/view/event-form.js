@@ -201,6 +201,10 @@ export default class EventForm extends SmartView {
     this._setInnerHandlers();
   }
 
+  reset(event) {
+    this.updateData(event);
+  }
+
   getTemplate() {
     return createEventFormTemplate(this._event);
   }
