@@ -1,9 +1,8 @@
 import SortView from "../view/sort.js";
 import TripDaysView from "../view/trip-days.js";
 import DayView from "../view/day.js";
-import EventFormView from "../view/event-form.js";
-import EventPointView from "../view/event-point.js";
-import {render, RenderPosition, replace} from "../utils/render.js";
+import EventPointPresenter from "./event-point.js";
+import {render, RenderPosition} from "../utils/render.js";
 import {getUniqueDates} from "../utils/specific.js";
 
 const {BEFOREEND} = RenderPosition;
@@ -42,27 +41,10 @@ export default class Trip {
     });
   }
 
-  _renderEvent(eventsListElement, event) {
-    const eventComponent = new EventPointView(event);
-    const eventEditComponent = new EventFormView(event);
+  _renderEvent(eventsListContainer, event) {
+    const eventPresenter = new EventPointPresenter(eventsListContainer);
 
-    const replaceEventToForm = () => {
-      replace(eventEditComponent, eventComponent);
-    };
-
-    const replaceFormToEvent = () => {
-      replace(eventComponent, eventEditComponent);
-    };
-
-    eventComponent.setEditClickHandler(() => {
-      replaceEventToForm();
-    });
-
-    eventEditComponent.setFormSubmitHandler(() => {
-      replaceFormToEvent();
-    });
-
-    render(eventsListElement, eventComponent, RenderPosition.BEFOREEND);
+    eventPresenter.init(event);
   }
 
   _renderEvents() {
