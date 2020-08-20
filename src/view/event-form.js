@@ -1,6 +1,7 @@
-import AbstractView from "./abstract.js";
+import SmartView from "./smart.js";
 import {transformPreposition} from "../utils/specific.js";
-import {Offer} from "../mock/event-point.js";
+import {toUpperCaseFirstLetter} from "../utils/common.js";
+import {Offer, TRIP_TYPES, STOP_TYPES} from "../mock/event-point.js";
 
 const humanizeDate = (date) => {
   const year = date
@@ -30,6 +31,19 @@ const setFavorite = (isFavorite) => {
   return ``;
 };
 
+const createRadioTemplate = (event, types) => {
+  return (
+    types.reduce((prev, current) => {
+      return prev + (
+        `<div class="event__type-item">
+          <input id="event-type-${current}-${event.id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${current}" ${event.type === current ? `checked` : ``}>
+          <label class="event__type-label  event__type-label--${current}" for="event-type-${current}-${event.id}">${toUpperCaseFirstLetter(current)}</label>
+        </div>`
+      );
+    }, ``)
+  );
+};
+
 const createOfferTemplate = (offer, check) => {
   return (
     `<div class="event__offer-selector">
@@ -46,7 +60,7 @@ const createOfferTemplate = (offer, check) => {
 const addOfferTemplate = (type, event) => {
   const {offers} = event;
 
-  type = type.toLowerCase().split(`-`)[0];
+  type = type.split(`-`)[0];
 
   let offersAll = [];
 
@@ -71,7 +85,7 @@ const createEventFormTemplate = (event) => {
   today.setHours(0, 0, 0, 0).toString();
 
   const {
-    type = `Taxi`,
+    type = `taxi`,
     city = ``,
     time = {
       start: today,
@@ -87,74 +101,26 @@ const createEventFormTemplate = (event) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
-
-              <div class="event__type-item">
-                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-              </div>
+              ${createRadioTemplate(event, TRIP_TYPES)}
             </fieldset>
 
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Activity</legend>
-
-              <div class="event__type-item">
-                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-              </div>
+              ${createRadioTemplate(event, STOP_TYPES)}
             </fieldset>
           </div>
         </div>
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-          ${type} ${transformPreposition(type)}
+          ${toUpperCaseFirstLetter(type)} ${transformPreposition(type)}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
           <datalist id="destination-list-1">
@@ -223,17 +189,38 @@ const createEventFormTemplate = (event) => {
   );
 };
 
-export default class EventForm extends AbstractView {
+export default class EventForm extends SmartView {
   constructor(event) {
     super();
     this._event = event;
 
-    this._submitHandler = this._submitHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._typeChangeHandler = this._typeChangeHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
     return createEventFormTemplate(this._event);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.event__type-list`)
+      .addEventListener(`change`, this._typeChangeHandler);
+  }
+
+  _typeChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      type: evt.target.value
+    });
   }
 
   _favoriteClickHandler(evt) {
@@ -241,14 +228,14 @@ export default class EventForm extends AbstractView {
     this._callback.favoriteClick();
   }
 
-  _submitHandler(evt) {
+  _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.submit(this._event);
+    this._callback.formSubmit(this._event);
   }
 
   setFormSubmitHandler(callback) {
-    this._callback.submit = callback;
-    this.getElement().addEventListener(`submit`, this._submitHandler);
+    this._callback.formSubmit = callback;
+    this.getElement().addEventListener(`submit`, this._formSubmitHandler);
   }
 
   setFavoriteClickHandler(callback) {

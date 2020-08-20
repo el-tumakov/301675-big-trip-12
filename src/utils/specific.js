@@ -1,8 +1,4 @@
-const TYPES_PREP_IN = [
-  `Sightseeing`,
-  `Restaurant`,
-  `Check-in`
-];
+import {STOP_TYPES} from "../mock/event-point.js";
 
 const Preposition = {
   TO: `to`,
@@ -12,7 +8,7 @@ const Preposition = {
 const {TO, IN} = Preposition;
 
 export const transformPreposition = (type) => {
-  if (TYPES_PREP_IN.includes(type)) {
+  if (STOP_TYPES.includes(type)) {
     return IN;
   }
 
