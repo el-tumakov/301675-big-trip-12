@@ -1,16 +1,24 @@
 import {getRandomInteger, getRandomElement} from "../utils/common.js";
 
+export const TRIP_TYPES = [
+  `taxi`,
+  `bus`,
+  `train`,
+  `ship`,
+  `transport`,
+  `drive`,
+  `flight`
+];
+
+export const STOP_TYPES = [
+  `check-in`,
+  `sightseeing`,
+  `restaurant`
+];
+
 const TYPES = [
-  `Taxi`,
-  `Bus`,
-  `Train`,
-  `Ship`,
-  `Transport`,
-  `Drive`,
-  `Flight`,
-  `Check-in`,
-  `Sightseeing`,
-  `Restaurant`
+  ...TRIP_TYPES,
+  ...STOP_TYPES
 ];
 
 const CITIES = [
@@ -59,6 +67,8 @@ const PointPrice = {
   MIN: 20,
   MAX: 600
 };
+
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 export const Offer = {
   taxi: [
@@ -184,12 +194,14 @@ export const generateEventPoint = () => {
   const type = generateType();
 
   return {
+    id: generateId(),
     type,
     city: generateCity(),
     offers: generateOffers(type),
     description: generateDescription(),
     photo: generatePhotos(),
     time: generateTime(),
-    price: generatePrice()
+    price: generatePrice(),
+    isFavorite: Boolean(getRandomInteger(0, 1))
   };
 };

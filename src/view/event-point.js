@@ -1,5 +1,6 @@
 import AbstractView from "./abstract.js";
 import {transformPreposition} from "../utils/specific.js";
+import {toUpperCaseFirstLetter} from "../utils/common.js";
 
 const MAX_OFFERS = 3;
 
@@ -69,9 +70,9 @@ const createEventPointTemplate = (event) => {
     `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${transformPreposition(type)} ${city}</h3>
+        <h3 class="event__title">${toUpperCaseFirstLetter(type)} ${transformPreposition(type)} ${city}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
@@ -103,20 +104,21 @@ export default class EventPoint extends AbstractView {
   constructor(event) {
     super();
     this._event = event;
-    this._clickHandler = this._clickHandler.bind(this);
+
+    this._editClickHandler = this._editClickHandler.bind(this);
   }
 
   getTemplate() {
     return createEventPointTemplate(this._event);
   }
 
-  _clickHandler(evt) {
+  _editClickHandler(evt) {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.editClick();
   }
 
   setEditClickHandler(callback) {
-    this._callback.click = callback;
-    this.getElement().addEventListener(`click`, this._clickHandler);
+    this._callback.editClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
   }
 }

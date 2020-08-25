@@ -1,9 +1,9 @@
 import SortView from "../view/sort.js";
 import TripDaysView from "../view/trip-days.js";
 import DayView from "../view/day.js";
-import EventFormView from "../view/event-form.js";
-import EventPointView from "../view/event-point.js";
-import {render, RenderPosition, replace} from "../utils/render.js";
+import EventPointPresenter from "./event-point.js";
+import {updateItem} from "../utils/specific.js";
+import {render, RenderPosition} from "../utils/render.js";
 import {getUniqueDates} from "../utils/specific.js";
 
 const {BEFOREEND} = RenderPosition;
@@ -11,15 +11,30 @@ const {BEFOREEND} = RenderPosition;
 export default class Trip {
   constructor(tripContainer) {
     this._tripContainer = tripContainer;
+    this._eventPresenter = {};
 
     this._sortComponent = new SortView();
     this._tripDaysComponent = new TripDaysView();
+
+    this._handleEventChange = this._handleEventChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(events) {
     this._events = events.slice();
 
     this._renderTrip();
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.resetView());
+  }
+
+  _handleEventChange(updatedEvent) {
+    this._events = updateItem(this._events, updatedEvent);
+    this._eventPresenter[updatedEvent.id].init(updatedEvent);
   }
 
   _renderSort() {
@@ -42,27 +57,12 @@ export default class Trip {
     });
   }
 
-  _renderEvent(eventsListElement, event) {
-    const eventComponent = new EventPointView(event);
-    const eventEditComponent = new EventFormView(event);
+  _renderEvent(eventsListContainer, event) {
+    const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleEventChange, this._handleModeChange);
 
-    const replaceEventToForm = () => {
-      replace(eventEditComponent, eventComponent);
-    };
+    eventPresenter.init(event);
 
-    const replaceFormToEvent = () => {
-      replace(eventComponent, eventEditComponent);
-    };
-
-    eventComponent.setEditClickHandler(() => {
-      replaceEventToForm();
-    });
-
-    eventEditComponent.setFormSubmitHandler(() => {
-      replaceFormToEvent();
-    });
-
-    render(eventsListElement, eventComponent, RenderPosition.BEFOREEND);
+    this._eventPresenter[event.id] = eventPresenter;
   }
 
   _renderEvents() {
