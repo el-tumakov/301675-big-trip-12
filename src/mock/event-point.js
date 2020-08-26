@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomElement} from "../utils/common.js";
+import {getRandomInteger, getRandomElement, generateId} from "../utils/common.js";
 
 export const TRIP_TYPES = [
   `taxi`,
@@ -67,8 +67,6 @@ const PointPrice = {
   MIN: 20,
   MAX: 600
 };
-
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 export const Offer = {
   taxi: [
