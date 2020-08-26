@@ -140,7 +140,7 @@ const createEventFormTemplate = (event) => {
         </div>
 
         <div class="event__field-group  event__field-group--time">
-          <label class="visually-hidden" for="event-start-time-1">
+          <label class="visually-hidden" for="event-start-time-${id}">
             From
           </label>
           <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${humanizeDate(time.start)}">
