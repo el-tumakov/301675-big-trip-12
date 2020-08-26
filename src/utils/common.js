@@ -5,6 +5,10 @@ export const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
+export const getRandomSign = () => {
+  return Math.random() < 0.5 ? 1 : -1;
+};
+
 export const getRandomElement = (array) => {
   return array[Math.floor(Math.random() * array.length)];
 };
