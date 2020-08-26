@@ -20,7 +20,6 @@ export default class Event {
     this._mode = Mode.DEFAULT;
 
     this._handleEditClick = this._handleEditClick.bind(this);
-    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
   }
 
@@ -34,7 +33,6 @@ export default class Event {
     this._eventFormComponent = new EventFormView(event);
 
     this._eventComponent.setEditClickHandler(this._handleEditClick);
-    this._eventFormComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
 
     if (prevEventComponent === null || prevEventFormComponent === null) {
@@ -79,18 +77,6 @@ export default class Event {
 
   _handleEditClick() {
     this._replaceEventToForm();
-  }
-
-  _handleFavoriteClick() {
-    this._changeData(
-        Object.assign(
-            {},
-            this._event,
-            {
-              isFavorite: !this._event.isFavorite
-            }
-        )
-    );
   }
 
   _handleFormSubmit(event) {

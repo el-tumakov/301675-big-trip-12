@@ -218,6 +218,9 @@ export default class EventForm extends SmartView {
     this.getElement()
       .querySelector(`.event__type-list`)
       .addEventListener(`change`, this._typeChangeHandler);
+    this.getElement()
+      .querySelector(`.event__favorite-btn`)
+      .addEventListener(`click`, this._favoriteClickHandler);
   }
 
   _typeChangeHandler(evt) {
@@ -229,7 +232,9 @@ export default class EventForm extends SmartView {
 
   _favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.favoriteClick();
+    this.updateData({
+      isFavorite: !this._event.isFavorite
+    });
   }
 
   _formSubmitHandler(evt) {
@@ -240,10 +245,5 @@ export default class EventForm extends SmartView {
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().addEventListener(`submit`, this._formSubmitHandler);
-  }
-
-  setFavoriteClickHandler(callback) {
-    this._callback.favoriteClick = callback;
-    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favoriteClickHandler);
   }
 }
