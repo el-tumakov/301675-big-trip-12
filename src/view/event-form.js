@@ -1,7 +1,22 @@
 import SmartView from "./smart.js";
 import {transformPreposition} from "../utils/specific.js";
-import {toUpperCaseFirstLetter, generateId} from "../utils/common.js";
+import {toUpperCaseFirstLetter, generateId, getToday} from "../utils/common.js";
 import {Offer, TRIP_TYPES, STOP_TYPES} from "../mock/event-point.js";
+
+const BLANK_EVENT = {
+  id: generateId(),
+  type: `taxi`,
+  city: ``,
+  offers: [],
+  description: ``,
+  photo: ``,
+  time: {
+    start: getToday(),
+    end: getToday()
+  },
+  price: ``,
+  isFavorite: false,
+};
 
 const humanizeDate = (date) => {
   const year = date
@@ -80,20 +95,13 @@ const addOfferTemplate = (type, event) => {
 };
 
 const createEventFormTemplate = (event) => {
-  const today = new Date();
-
-  today.setHours(0, 0, 0, 0).toString();
-
   const {
-    id = generateId(),
-    type = `taxi`,
-    city = ``,
-    time = {
-      start: today,
-      end: today
-    },
-    price = ``,
-    isFavorite = false,
+    id,
+    type,
+    city,
+    time,
+    price,
+    isFavorite
   } = event;
 
   const form = (
@@ -191,13 +199,15 @@ const createEventFormTemplate = (event) => {
 };
 
 export default class EventForm extends SmartView {
-  constructor(event) {
+  constructor(event = BLANK_EVENT) {
     super();
     this._event = event;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._cityChangeHandler = this._cityChangeHandler.bind(this);
+    this._priceChangeHandler = this._priceChangeHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
 
     this._setInnerHandlers();
@@ -214,6 +224,7 @@ export default class EventForm extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _setInnerHandlers() {
@@ -223,6 +234,9 @@ export default class EventForm extends SmartView {
     this.getElement()
       .querySelector(`.event__input--destination`)
       .addEventListener(`change`, this._cityChangeHandler);
+    this.getElement()
+    .querySelector(`.event__input--price`)
+    .addEventListener(`change`, this._priceChangeHandler);
     this.getElement()
       .querySelector(`.event__favorite-btn`)
       .addEventListener(`click`, this._favoriteClickHandler);
@@ -242,6 +256,13 @@ export default class EventForm extends SmartView {
     }, true);
   }
 
+  _priceChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      price: evt.target.value
+    }, true);
+  }
+
   _favoriteClickHandler(evt) {
     evt.preventDefault();
     this.updateData({
@@ -257,5 +278,17 @@ export default class EventForm extends SmartView {
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(this._event);
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement()
+      .querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, this._deleteClickHandler);
   }
 }

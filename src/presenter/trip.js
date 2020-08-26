@@ -2,8 +2,10 @@ import SortView from "../view/sort.js";
 import TripDaysView from "../view/trip-days.js";
 import DayView from "../view/day.js";
 import EventPointPresenter from "./event-point.js";
-import {render, RenderPosition} from "../utils/render.js";
+import EventNewPresenter from "./event-new.js";
+import {render, RenderPosition, remove} from "../utils/render.js";
 import {getUniqueDates} from "../utils/specific.js";
+import {UserAction, UpdateType} from "../const.js";
 
 const {BEFOREEND} = RenderPosition;
 
@@ -16,12 +18,21 @@ export default class Trip {
     this._sortComponent = new SortView();
     this._tripDaysComponent = new TripDaysView();
 
-    this._handleEventChange = this._handleEventChange.bind(this);
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+
+    this._eventsModel.addObserver(this._handleModelEvent);
+
+    this._eventNewPresenter = new EventNewPresenter(this._tripContainer, this._handleViewAction);
   }
 
   init() {
     this._renderTrip();
+  }
+
+  createEvent() {
+    this._eventNewPresenter.init();
   }
 
   _getEvents() {
@@ -30,9 +41,38 @@ export default class Trip {
   }
 
   _handleModeChange() {
+    this._eventNewPresenter.destroy();
     Object
       .values(this._eventPresenter)
       .forEach((presenter) => presenter.resetView());
+  }
+
+  _handleViewAction(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this._eventsModel.updateEvent(updateType, update);
+        break;
+      case UserAction.ADD_EVENT:
+        this._eventsModel.addEvent(updateType, update);
+        break;
+      case UserAction.DELETE_EVENT:
+        this._eventsModel.deleteEvent(updateType, update);
+        break;
+    }
+  }
+
+  _handleModelEvent(updateType, data) {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this._eventPresenter[data.id].init(data);
+        break;
+      case UpdateType.MINOR:
+        this._clearTrip();
+        this._renderTrip();
+        break;
+      case UpdateType.MAJOR:
+        break;
+    }
   }
 
   _handleEventChange(updatedEvent) {
@@ -60,7 +100,7 @@ export default class Trip {
   }
 
   _renderEvent(eventsListContainer, event) {
-    const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleEventChange, this._handleModeChange);
+    const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleViewAction, this._handleModeChange);
 
     eventPresenter.init(event);
 
@@ -79,6 +119,17 @@ export default class Trip {
 
       this._renderEvent(pointsListElement, item);
     });
+  }
+
+  _clearTrip() {
+    this._eventNewPresenter.destroy();
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._eventPresenter = {};
+
+    remove(this._sortComponent);
+    remove(this._tripDaysComponent);
   }
 
   _renderTrip() {

@@ -23,12 +23,15 @@ export const getMonthString = (date) => {
   return month.toUpperCase().slice(0, 3);
 };
 
+const toISODate = (date) => {
+  return date.toISOString().slice(0, -14);
+};
+
 export const getUniqueDates = (data) => {
   const dates = [];
 
   data.forEach((item) => {
-    let date = item.time.start
-      .toISOString().slice(0, -14);
+    let date = toISODate(item.time.start);
 
     if (!dates.includes(date)) {
       dates.push(date);
@@ -38,16 +41,6 @@ export const getUniqueDates = (data) => {
   return dates;
 };
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1)
-  ];
+export const isDatesEqual = (dateA, dateB) => {
+  return toISODate(dateA) === toISODate(dateB);
 };

@@ -18,3 +18,11 @@ export const toUpperCaseFirstLetter = (str) => {
 };
 
 export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
+export const getToday = () => {
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0).toString();
+
+  return today;
+};
