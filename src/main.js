@@ -2,8 +2,10 @@ import TitleH2View from "./view/title-h2.js";
 import SiteMenuView from "./view/site-menu.js";
 import FilterView from "./view/filter.js";
 import TripInfoPresenter from "./presenter/trip-info.js";
+import FilterPresenter from "./presenter/filter.js";
 import TripPresenter from "./presenter/trip.js";
 import EventsModel from "./model/events.js";
+import FilterModel from "./model/filter.js";
 import {generateEventPoint} from "./mock/event-point.js";
 import {render, RenderPosition} from "./utils/render.js";
 
@@ -15,6 +17,8 @@ const events = new Array(EVENTS_COUNT).fill().map(generateEventPoint);
 const eventsModel = new EventsModel();
 
 eventsModel.setEvents(events);
+
+const filterModel = new FilterModel();
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripMainElement = siteHeaderElement.querySelector(`.trip-main`);
@@ -36,11 +40,12 @@ render(
     new TitleH2View(new FilterView().getTitle()),
     BEFOREEND
 );
-render(tripControlsElement, new FilterView(), BEFOREEND);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-const tripPresenter = new TripPresenter(tripEventsElement, eventsModel);
+const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
+const tripPresenter = new TripPresenter(tripEventsElement, eventsModel, filterModel);
 
+filterPresenter.init();
 tripPresenter.init();
 
 document.querySelector(`.trip-main__event-add-btn`)

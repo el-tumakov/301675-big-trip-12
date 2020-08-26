@@ -5,14 +5,16 @@ import EventPointPresenter from "./event-point.js";
 import EventNewPresenter from "./event-new.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {getUniqueDates} from "../utils/specific.js";
+import {filter} from "../utils/filter.js";
 import {UserAction, UpdateType} from "../const.js";
 
 const {BEFOREEND} = RenderPosition;
 
 export default class Trip {
-  constructor(tripContainer, eventsModel) {
+  constructor(tripContainer, eventsModel, filterModel) {
     this._tripContainer = tripContainer;
     this._eventsModel = eventsModel;
+    this._filterModel = filterModel;
     this._eventPresenter = {};
 
     this._sortComponent = new SortView();
@@ -23,6 +25,7 @@ export default class Trip {
     this._handleModeChange = this._handleModeChange.bind(this);
 
     this._eventsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
 
     this._eventNewPresenter = new EventNewPresenter(this._tripContainer, this._handleViewAction);
   }
@@ -36,8 +39,14 @@ export default class Trip {
   }
 
   _getEvents() {
-    return this._eventsModel.getEvents().slice()
-      .sort((a, b) => a.time.start - b.time.start);
+    const filterType = this._filterModel.getFilter();
+
+    const events = this._eventsModel.getEvents()
+      .slice().sort((a, b) => a.time.start - b.time.start);
+
+    const filtredEvents = filter[filterType](events);
+
+    return filtredEvents;
   }
 
   _handleModeChange() {
@@ -71,6 +80,8 @@ export default class Trip {
         this._renderTrip();
         break;
       case UpdateType.MAJOR:
+        this._clearTrip();
+        this._renderTrip();
         break;
     }
   }
