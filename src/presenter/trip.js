@@ -2,15 +2,15 @@ import SortView from "../view/sort.js";
 import TripDaysView from "../view/trip-days.js";
 import DayView from "../view/day.js";
 import EventPointPresenter from "./event-point.js";
-import {updateItem} from "../utils/specific.js";
 import {render, RenderPosition} from "../utils/render.js";
 import {getUniqueDates} from "../utils/specific.js";
 
 const {BEFOREEND} = RenderPosition;
 
 export default class Trip {
-  constructor(tripContainer) {
+  constructor(tripContainer, eventsModel) {
     this._tripContainer = tripContainer;
+    this._eventsModel = eventsModel;
     this._eventPresenter = {};
 
     this._sortComponent = new SortView();
@@ -20,10 +20,13 @@ export default class Trip {
     this._handleModeChange = this._handleModeChange.bind(this);
   }
 
-  init(events) {
-    this._events = events.slice();
-
+  init() {
     this._renderTrip();
+  }
+
+  _getEvents() {
+    return this._eventsModel.getEvents().slice()
+      .sort((a, b) => a.time.start - b.time.start);
   }
 
   _handleModeChange() {
@@ -33,7 +36,6 @@ export default class Trip {
   }
 
   _handleEventChange(updatedEvent) {
-    this._events = updateItem(this._events, updatedEvent);
     this._eventPresenter[updatedEvent.id].init(updatedEvent);
   }
 
@@ -52,7 +54,7 @@ export default class Trip {
   }
 
   _renderDays() {
-    getUniqueDates(this._events).forEach((item, index) => {
+    getUniqueDates(this._getEvents()).forEach((item, index) => {
       this._renderDay(item, index);
     });
   }
@@ -66,7 +68,7 @@ export default class Trip {
   }
 
   _renderEvents() {
-    this._events.forEach((item) => {
+    this._getEvents().forEach((item) => {
       const {time} = item;
 
       const timeISO = time.start.toISOString().slice(0, -14);
