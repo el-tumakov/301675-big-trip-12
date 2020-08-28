@@ -1,4 +1,4 @@
-import {getRandomInteger, getRandomElement} from "../utils/common.js";
+import {getRandomInteger, getRandomElement, generateId, getRandomSign} from "../utils/common.js";
 
 export const TRIP_TYPES = [
   `taxi`,
@@ -60,15 +60,13 @@ const Photo = {
 
 const Time = {
   MIN: 1000 * 60 * 60,
-  MAX: 1000 * 60 * 60 * 24 * 7
+  MAX: 1000 * 60 * 60 * 24 * 4
 };
 
 const PointPrice = {
   MIN: 20,
   MAX: 600
 };
-
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 export const Offer = {
   taxi: [
@@ -173,12 +171,8 @@ const generateTime = () => {
   let start = new Date();
   let end = new Date();
 
-  const setTime = (day) => {
-    day.setTime(start.getTime() + getRandomInteger(Time.MIN, Time.MAX));
-  };
-
-  setTime(start);
-  setTime(end);
+  start.setTime(start.getTime() + getRandomSign() * getRandomInteger(Time.MIN, Time.MAX));
+  end.setTime(start.getTime() + getRandomInteger(Time.MIN, Time.MAX));
 
   return {
     start,

@@ -5,10 +5,10 @@ const createTripPriceTemplate = (events) => {
 
   events.forEach((item) => {
     item.offers.forEach((offer) => {
-      sum += offer.price;
+      sum += +offer.price;
     });
 
-    sum += item.price;
+    sum += +item.price;
   });
 
   return (

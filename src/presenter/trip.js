@@ -2,38 +2,91 @@ import SortView from "../view/sort.js";
 import TripDaysView from "../view/trip-days.js";
 import DayView from "../view/day.js";
 import EventPointPresenter from "./event-point.js";
-import {updateItem} from "../utils/specific.js";
-import {render, RenderPosition} from "../utils/render.js";
+import EventNewPresenter from "./event-new.js";
+import {render, RenderPosition, remove} from "../utils/render.js";
 import {getUniqueDates} from "../utils/specific.js";
+import {filter} from "../utils/filter.js";
+import {UserAction, UpdateType} from "../const.js";
 
 const {BEFOREEND} = RenderPosition;
 
 export default class Trip {
-  constructor(tripContainer) {
+  constructor(tripContainer, eventsModel, filterModel) {
     this._tripContainer = tripContainer;
+    this._eventsModel = eventsModel;
+    this._filterModel = filterModel;
     this._eventPresenter = {};
 
     this._sortComponent = new SortView();
     this._tripDaysComponent = new TripDaysView();
 
-    this._handleEventChange = this._handleEventChange.bind(this);
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+
+    this._eventsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
+    this._eventNewPresenter = new EventNewPresenter(this._tripContainer, this._handleViewAction);
   }
 
-  init(events) {
-    this._events = events.slice();
-
+  init() {
     this._renderTrip();
   }
 
+  createEvent() {
+    this._eventNewPresenter.init();
+  }
+
+  _getEvents() {
+    const filterType = this._filterModel.getFilter();
+
+    const events = this._eventsModel.getEvents()
+      .slice().sort((a, b) => a.time.start - b.time.start);
+
+    const filtredEvents = filter[filterType](events);
+
+    return filtredEvents;
+  }
+
   _handleModeChange() {
+    this._eventNewPresenter.destroy();
     Object
       .values(this._eventPresenter)
       .forEach((presenter) => presenter.resetView());
   }
 
+  _handleViewAction(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this._eventsModel.updateEvent(updateType, update);
+        break;
+      case UserAction.ADD_EVENT:
+        this._eventsModel.addEvent(updateType, update);
+        break;
+      case UserAction.DELETE_EVENT:
+        this._eventsModel.deleteEvent(updateType, update);
+        break;
+    }
+  }
+
+  _handleModelEvent(updateType, data) {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this._eventPresenter[data.id].init(data);
+        break;
+      case UpdateType.MINOR:
+        this._clearTrip();
+        this._renderTrip();
+        break;
+      case UpdateType.MAJOR:
+        this._clearTrip();
+        this._renderTrip();
+        break;
+    }
+  }
+
   _handleEventChange(updatedEvent) {
-    this._events = updateItem(this._events, updatedEvent);
     this._eventPresenter[updatedEvent.id].init(updatedEvent);
   }
 
@@ -52,13 +105,13 @@ export default class Trip {
   }
 
   _renderDays() {
-    getUniqueDates(this._events).forEach((item, index) => {
+    getUniqueDates(this._getEvents()).forEach((item, index) => {
       this._renderDay(item, index);
     });
   }
 
   _renderEvent(eventsListContainer, event) {
-    const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleEventChange, this._handleModeChange);
+    const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleViewAction, this._handleModeChange);
 
     eventPresenter.init(event);
 
@@ -66,7 +119,7 @@ export default class Trip {
   }
 
   _renderEvents() {
-    this._events.forEach((item) => {
+    this._getEvents().forEach((item) => {
       const {time} = item;
 
       const timeISO = time.start.toISOString().slice(0, -14);
@@ -77,6 +130,17 @@ export default class Trip {
 
       this._renderEvent(pointsListElement, item);
     });
+  }
+
+  _clearTrip() {
+    this._eventNewPresenter.destroy();
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._eventPresenter = {};
+
+    remove(this._sortComponent);
+    remove(this._tripDaysComponent);
   }
 
   _renderTrip() {

@@ -1,3 +1,4 @@
+import he from "he";
 import AbstractView from "./abstract.js";
 import {transformPreposition} from "../utils/specific.js";
 import {toUpperCaseFirstLetter} from "../utils/common.js";
@@ -72,19 +73,19 @@ const createEventPointTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${toUpperCaseFirstLetter(type)} ${transformPreposition(type)} ${city}</h3>
+        <h3 class="event__title">${toUpperCaseFirstLetter(type)} ${transformPreposition(type)} ${he.encode(city)}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${time.start.toISOString()}">${humanizeTime(time.start)}</time>
+            <time class="event__start-time" datetime="${time.start.toISOString()}">${he.encode(humanizeTime(time.start))}</time>
             &mdash;
-            <time class="event__end-time" datetime="${time.end.toISOString()}">${humanizeTime(time.end)}</time>
+            <time class="event__end-time" datetime="${time.end.toISOString()}">${he.encode(humanizeTime(time.end))}</time>
           </p>
           <p class="event__duration">${humanizePeriod(period)}</p>
         </div>
 
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${price}</span>
+          &euro;&nbsp;<span class="event__price-value">${he.encode(price.toString())}</span>
         </p>
 
         <h4 class="visually-hidden">Offers:</h4>

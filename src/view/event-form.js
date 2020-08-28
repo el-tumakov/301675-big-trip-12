@@ -1,7 +1,22 @@
 import SmartView from "./smart.js";
 import {transformPreposition} from "../utils/specific.js";
-import {toUpperCaseFirstLetter} from "../utils/common.js";
+import {toUpperCaseFirstLetter, generateId, getToday} from "../utils/common.js";
 import {Offer, TRIP_TYPES, STOP_TYPES} from "../mock/event-point.js";
+
+const BLANK_EVENT = {
+  id: generateId(),
+  type: `taxi`,
+  city: ``,
+  offers: [],
+  description: ``,
+  photo: ``,
+  time: {
+    start: getToday(),
+    end: getToday()
+  },
+  price: ``,
+  isFavorite: false,
+};
 
 const humanizeDate = (date) => {
   const year = date
@@ -80,30 +95,24 @@ const addOfferTemplate = (type, event) => {
 };
 
 const createEventFormTemplate = (event) => {
-  const today = new Date();
-
-  today.setHours(0, 0, 0, 0).toString();
-
   const {
-    type = `taxi`,
-    city = ``,
-    time = {
-      start: today,
-      end: today
-    },
-    price = ``,
-    isFavorite = false,
+    id,
+    type,
+    city,
+    time,
+    price,
+    isFavorite
   } = event;
 
   const form = (
     `<form class="event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
-          <label class="event__type  event__type-btn" for="event-type-toggle-1">
+          <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -119,11 +128,11 @@ const createEventFormTemplate = (event) => {
         </div>
 
         <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-1">
+          <label class="event__label  event__type-output" for="event-destination-${id}">
           ${toUpperCaseFirstLetter(type)} ${transformPreposition(type)}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
-          <datalist id="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${city}" list="destination-list-${id}">
+          <datalist id="destination-list-${id}">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
             <option value="Chamonix"></option>
@@ -131,30 +140,30 @@ const createEventFormTemplate = (event) => {
         </div>
 
         <div class="event__field-group  event__field-group--time">
-          <label class="visually-hidden" for="event-start-time-1">
+          <label class="visually-hidden" for="event-start-time-${id}">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${humanizeDate(time.start)}">
+          <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${humanizeDate(time.start)}">
           &mdash;
-          <label class="visually-hidden" for="event-end-time-1">
+          <label class="visually-hidden" for="event-end-time-${id}">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${humanizeDate(time.end)}">
+          <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${humanizeDate(time.end)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
-          <label class="event__label" for="event-price-1">
+          <label class="event__label" for="event-price-${id}">
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
 
-        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${setFavorite(isFavorite)}>
-        <label class="event__favorite-btn" for="event-favorite-1">
+        <input id="event-favorite-${id}" class="event__favorite-checkbox visually-hidden" type="checkbox" name="event-favorite" ${setFavorite(isFavorite)}>
+        <label class="event__favorite-btn" for="event-favorite-${id}">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
             <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -190,13 +199,16 @@ const createEventFormTemplate = (event) => {
 };
 
 export default class EventForm extends SmartView {
-  constructor(event) {
+  constructor(event = BLANK_EVENT) {
     super();
     this._event = event;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
-    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
+    this._cityChangeHandler = this._cityChangeHandler.bind(this);
+    this._priceChangeHandler = this._priceChangeHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -212,12 +224,22 @@ export default class EventForm extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _setInnerHandlers() {
     this.getElement()
       .querySelector(`.event__type-list`)
       .addEventListener(`change`, this._typeChangeHandler);
+    this.getElement()
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`change`, this._cityChangeHandler);
+    this.getElement()
+    .querySelector(`.event__input--price`)
+    .addEventListener(`change`, this._priceChangeHandler);
+    this.getElement()
+      .querySelector(`.event__favorite-btn`)
+      .addEventListener(`click`, this._favoriteClickHandler);
   }
 
   _typeChangeHandler(evt) {
@@ -227,9 +249,25 @@ export default class EventForm extends SmartView {
     });
   }
 
+  _cityChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      city: evt.target.value
+    }, true);
+  }
+
+  _priceChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      price: evt.target.value
+    }, true);
+  }
+
   _favoriteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.favoriteClick();
+    this.updateData({
+      isFavorite: !this._event.isFavorite
+    });
   }
 
   _formSubmitHandler(evt) {
@@ -242,8 +280,15 @@ export default class EventForm extends SmartView {
     this.getElement().addEventListener(`submit`, this._formSubmitHandler);
   }
 
-  setFavoriteClickHandler(callback) {
-    this._callback.favoriteClick = callback;
-    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favoriteClickHandler);
+  _deleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(this._event);
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement()
+      .querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, this._deleteClickHandler);
   }
 }

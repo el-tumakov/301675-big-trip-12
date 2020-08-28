@@ -1,27 +1,30 @@
-import TripInfoView from "./view/trip-info.js";
-import TripPriceView from "./view/trip-price.js";
 import TitleH2View from "./view/title-h2.js";
 import SiteMenuView from "./view/site-menu.js";
 import FilterView from "./view/filter.js";
+import TripInfoPresenter from "./presenter/trip-info.js";
+import FilterPresenter from "./presenter/filter.js";
 import TripPresenter from "./presenter/trip.js";
+import EventsModel from "./model/events.js";
+import FilterModel from "./model/filter.js";
 import {generateEventPoint} from "./mock/event-point.js";
 import {render, RenderPosition} from "./utils/render.js";
 
 const EVENTS_COUNT = 25;
 
-const {AFTERBEGIN, BEFOREEND} = RenderPosition;
+const {BEFOREEND} = RenderPosition;
 
 const events = new Array(EVENTS_COUNT).fill().map(generateEventPoint);
-const sortEvents = events.sort((a, b) => a.time.start - b.time.start);
+const eventsModel = new EventsModel();
+
+eventsModel.setEvents(events);
+
+const filterModel = new FilterModel();
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripMainElement = siteHeaderElement.querySelector(`.trip-main`);
+const tripInfoPresenter = new TripInfoPresenter(tripMainElement, eventsModel);
 
-render(tripMainElement, new TripInfoView(sortEvents), AFTERBEGIN);
-
-const tripInfoElement = siteHeaderElement.querySelector(`.trip-info`);
-
-render(tripInfoElement, new TripPriceView(sortEvents), BEFOREEND);
+tripInfoPresenter.init();
 
 const tripControlsElement = siteHeaderElement.querySelector(`.trip-controls`);
 
@@ -37,9 +40,16 @@ render(
     new TitleH2View(new FilterView().getTitle()),
     BEFOREEND
 );
-render(tripControlsElement, new FilterView(), BEFOREEND);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-const tripPresenter = new TripPresenter(tripEventsElement);
+const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
+const tripPresenter = new TripPresenter(tripEventsElement, eventsModel, filterModel);
 
-tripPresenter.init(sortEvents);
+filterPresenter.init();
+tripPresenter.init();
+
+document.querySelector(`.trip-main__event-add-btn`)
+  .addEventListener(`click`, (evt) => {
+    evt.preventDefault();
+    tripPresenter.createEvent();
+  });
