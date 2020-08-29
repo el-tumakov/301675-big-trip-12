@@ -8,12 +8,17 @@ import EventsModel from "./model/events.js";
 import FilterModel from "./model/filter.js";
 import {generateEventPoint} from "./mock/event-point.js";
 import {render, RenderPosition} from "./utils/render.js";
+import Api from "./api.js";
 
 const EVENTS_COUNT = 25;
+const AUTHORIZATION = `Basic aL2aw6dreVbgly7fr3a`;
+const END_POINT = `https://12.ecmascript.pages.academy/big-trip`;
 
 const {BEFOREEND} = RenderPosition;
 
 const events = new Array(EVENTS_COUNT).fill().map(generateEventPoint);
+const api = new Api(END_POINT, AUTHORIZATION);
+
 const eventsModel = new EventsModel();
 
 eventsModel.setEvents(events);
