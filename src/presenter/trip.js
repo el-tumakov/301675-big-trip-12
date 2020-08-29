@@ -19,6 +19,7 @@ export default class Trip {
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
     this._eventPresenter = {};
+    this._tripInfoPresenter = {};
     this._isLoading = true;
     this._api = api;
 
@@ -85,6 +86,8 @@ export default class Trip {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
+        this._tripInfoPresenter.destroy();
+        this._renderTripInfo();
         this._eventPresenter[data.id].init(this._eventsModel.getEvents(), data, this._getOffers());
         break;
       case UpdateType.MINOR:
@@ -106,6 +109,8 @@ export default class Trip {
   _renderTripInfo() {
     const tripMainElement = document.querySelector(`.trip-main`);
     const tripInfoPresenter = new TripInfoPresenter(tripMainElement);
+
+    this._tripInfoPresenter = tripInfoPresenter;
 
     tripInfoPresenter.init(this._eventsModel.getEvents());
   }

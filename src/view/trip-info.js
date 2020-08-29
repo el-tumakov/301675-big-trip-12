@@ -31,10 +31,14 @@ const createTripInfoTemplate = (events) => {
     let cities = [];
 
     events.forEach((item) => {
-      if (!cities.includes(item.city)) {
-        cities.push(item.city);
-      }
+      cities.push(item.city);
     });
+
+    if (cities.length > 3) {
+      return (
+        `${cities[0]} &mdash; ... &mdash; ${cities[cities.length - 1]}`
+      );
+    }
 
     return cities.join(` &mdash; `);
   };
