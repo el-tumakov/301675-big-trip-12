@@ -41,7 +41,7 @@ export default class Trip {
   }
 
   createEvent() {
-    this._eventNewPresenter.init(this._getOffers());
+    this._eventNewPresenter.init(this._eventsModel.getEvents(), this._getOffers());
   }
 
   _getOffers() {
@@ -85,7 +85,7 @@ export default class Trip {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        this._eventPresenter[data.id].init(data, this._getOffers());
+        this._eventPresenter[data.id].init(this._eventsModel.getEvents(), data, this._getOffers());
         break;
       case UpdateType.MINOR:
         this._clearTrip();
@@ -136,7 +136,7 @@ export default class Trip {
 
   _renderEvent(eventsListContainer, event) {
     const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleViewAction, this._handleModeChange);
-    eventPresenter.init(event, this._getOffers());
+    eventPresenter.init(this._eventsModel.getEvents(), event, this._getOffers());
 
     this._eventPresenter[event.id] = eventPresenter;
   }

@@ -15,12 +15,12 @@ export default class EventNew {
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
-  init(offers) {
+  init(events, offers) {
     if (this._eventFormComponent !== null) {
       return;
     }
 
-    this._eventFormComponent = new EventFormView(offers);
+    this._eventFormComponent = new EventFormView(events, offers);
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventFormComponent.setDeleteClickHandler(this._handleDeleteClick);
 

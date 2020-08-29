@@ -48,6 +48,30 @@ const setFavorite = (isFavorite) => {
   return ``;
 };
 
+const getUniqCities = (events) => {
+  const cities = [];
+
+  events.forEach((item) => {
+    if (!cities.includes(item.city)) {
+      cities.push(item.city);
+    }
+  });
+
+  return cities;
+};
+
+const createCityListTemplate = (events) => {
+  const uniqCities = getUniqCities(events);
+
+  return (
+    uniqCities.reduce((prev, current) => {
+      return prev + (
+        `<option value="${current}"></option>`
+      );
+    }, ``)
+  );
+};
+
 const createRadioTemplate = (event, types) => {
   return (
     types.reduce((prev, current) => {
@@ -101,7 +125,7 @@ const addOfferTemplate = (event, offersData) => {
   return offersTemplate.join(``);
 };
 
-const createEventFormTemplate = (event, offers) => {
+const createEventFormTemplate = (event, offers, events) => {
   const {
     id,
     type,
@@ -140,9 +164,7 @@ const createEventFormTemplate = (event, offers) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${city}" list="destination-list-${id}">
           <datalist id="destination-list-${id}">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            ${createCityListTemplate(events)}
           </datalist>
         </div>
 
@@ -206,8 +228,9 @@ const createEventFormTemplate = (event, offers) => {
 };
 
 export default class EventForm extends SmartView {
-  constructor(offers, event = BLANK_EVENT) {
+  constructor(events, offers, event = BLANK_EVENT) {
     super();
+    this._events = events;
     this._offers = offers;
     this._event = event;
 
@@ -226,7 +249,7 @@ export default class EventForm extends SmartView {
   }
 
   getTemplate() {
-    return createEventFormTemplate(this._event, this._offers);
+    return createEventFormTemplate(this._event, this._offers, this._events);
   }
 
   restoreHandlers() {
@@ -280,6 +303,11 @@ export default class EventForm extends SmartView {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
+
+    if (!this._validateCity()) {
+      return;
+    }
+
     this._callback.formSubmit(this._event);
   }
 
@@ -298,5 +326,12 @@ export default class EventForm extends SmartView {
     this.getElement()
       .querySelector(`.event__reset-btn`)
       .addEventListener(`click`, this._deleteClickHandler);
+  }
+
+  _validateCity() {
+    const cityInputValue = document.querySelector(`.event__input--destination`).value;
+    const cities = getUniqCities(this._events);
+
+    return cities.includes(cityInputValue) ? true : false;
   }
 }
