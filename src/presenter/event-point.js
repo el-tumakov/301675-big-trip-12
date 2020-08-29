@@ -26,14 +26,12 @@ export default class Event {
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
-  init(event) {
-    this._event = event;
-
+  init(event, offers) {
     const prevEventComponent = this._eventComponent;
     const prevEventFormComponent = this._eventFormComponent;
 
     this._eventComponent = new EventPointView(event);
-    this._eventFormComponent = new EventFormView(event);
+    this._eventFormComponent = new EventFormView(offers, event);
 
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);

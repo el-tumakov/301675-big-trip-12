@@ -19,16 +19,18 @@ const BLANK_EVENT = {
 };
 
 const humanizeDate = (date) => {
-  const year = date
+  const dateData = new Date(date);
+
+  const year = dateData
     .getFullYear()
     .toLocaleString()
     .slice(3);
 
-  return date.toLocaleDateString(`en-GB`)
+  return dateData.toLocaleDateString(`en-GB`)
     .slice(0, -4) +
     year +
     ` ` +
-    date.toLocaleTimeString()
+    dateData.toLocaleTimeString()
     .slice(0, -3);
 };
 
@@ -78,14 +80,18 @@ const addOfferTemplate = (event, offersData) => {
   let offersTemplate = [];
 
   const offer = offersData.find((item) => item.type === type);
-  const offersOfType = offer.offers;
 
-  if (offersOfType.length !== 0) {
+  if (offer.offers.length !== 0) {
+    const offersOfType = offer.offers;
+
     offersOfType.forEach((item) => {
       let check = ``;
 
-      if (offers.include(item)) {
-        check = `checked`;
+      for (let i = 0; i < offers.length; i++) {
+        if (offers[i].title === item.title) {
+          check = `checked`;
+          break;
+        }
       }
 
       offersTemplate.push(createOfferTemplate(item, check, id));
@@ -200,8 +206,9 @@ const createEventFormTemplate = (event, offers) => {
 };
 
 export default class EventForm extends SmartView {
-  constructor(event = BLANK_EVENT) {
+  constructor(offers, event = BLANK_EVENT) {
     super();
+    this._offers = offers;
     this._event = event;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -219,7 +226,7 @@ export default class EventForm extends SmartView {
   }
 
   getTemplate() {
-    return createEventFormTemplate(this._event);
+    return createEventFormTemplate(this._event, this._offers);
   }
 
   restoreHandlers() {

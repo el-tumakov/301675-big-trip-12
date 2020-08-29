@@ -23,8 +23,8 @@ export const getMonthString = (date) => {
   return month.toUpperCase().slice(0, 3);
 };
 
-const toISODate = (date) => {
-  return date.toISOString().slice(0, -14);
+export const toISODate = (date) => {
+  return date.slice(0, -14);
 };
 
 export const getUniqueDates = (data) => {

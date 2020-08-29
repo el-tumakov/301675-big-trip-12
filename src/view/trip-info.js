@@ -8,12 +8,16 @@ const createTripInfoTemplate = (events) => {
   let dayEnd = ``;
   let checkMonth = () => ``;
 
-  monthStart = getMonthString(events[0].time.start);
-  monthEnd = getMonthString(
-      events[events.length - 1]
-      .time.end);
-  dayStart = events[0].time.start.getDate() + `&nbsp;&mdash;&nbsp;`;
-  dayEnd = events[events.length - 1].time.end.getDate();
+  if (events.length) {
+    const startDate = new Date(events[0].time.start);
+    const endDate = new Date(events[events.length - 1].time.end);
+
+    monthStart = getMonthString(startDate);
+    monthEnd = getMonthString(endDate);
+
+    dayStart = startDate.getDate() + `&nbsp;&mdash;&nbsp;`;
+    dayEnd = endDate.getDate();
+  }
 
   checkMonth = () => {
     if (monthStart === monthEnd) {
