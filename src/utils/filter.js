@@ -3,7 +3,7 @@ import {FilterType} from "../const.js";
 const isPastDate = (date) => {
   const today = new Date();
 
-  return date < today;
+  return new Date(date) < today;
 };
 
 export const filter = {

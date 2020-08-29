@@ -92,6 +92,15 @@ export default class Trip {
         break;
       case UpdateType.MINOR:
         this._clearTrip();
+        this._renderSort();
+        this._renderTripDays();
+        this._renderDays();
+        this._renderEvents();
+        break;
+      case UpdateType.MAJOR:
+        this._tripInfoPresenter.destroy();
+        this._clearTrip();
+        this._renderTripInfo();
         this._renderTrip();
         break;
       case UpdateType.INIT:
