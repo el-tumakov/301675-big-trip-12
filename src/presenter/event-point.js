@@ -27,6 +27,8 @@ export default class Event {
   }
 
   init(event, offers) {
+    this._event = event;
+
     const prevEventComponent = this._eventComponent;
     const prevEventFormComponent = this._eventFormComponent;
 

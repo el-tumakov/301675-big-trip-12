@@ -40,7 +40,7 @@ const filterModel = new FilterModel();
 const offersModel = new OffersModel();
 
 const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
-const tripPresenter = new TripPresenter(tripEventsElement, offersModel, eventsModel, filterModel);
+const tripPresenter = new TripPresenter(tripEventsElement, offersModel, eventsModel, filterModel, api);
 
 filterPresenter.init();
 tripPresenter.init();

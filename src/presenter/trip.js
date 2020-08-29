@@ -13,13 +13,14 @@ import {UserAction, UpdateType} from "../const.js";
 const {BEFOREEND} = RenderPosition;
 
 export default class Trip {
-  constructor(tripContainer, offersModel, eventsModel, filterModel) {
+  constructor(tripContainer, offersModel, eventsModel, filterModel, api) {
     this._tripContainer = tripContainer;
     this._offersModel = offersModel;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
     this._eventPresenter = {};
     this._isLoading = true;
+    this._api = api;
 
     this._sortComponent = new SortView();
     this._tripDaysComponent = new TripDaysView();
@@ -32,7 +33,7 @@ export default class Trip {
     this._eventsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
 
-    this._eventNewPresenter = new EventNewPresenter(this._tripContainer, this._handleViewAction, this._getOffers());
+    this._eventNewPresenter = new EventNewPresenter(this._tripContainer, this._handleViewAction);
   }
 
   init() {
@@ -68,7 +69,9 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this._eventsModel.updateEvent(updateType, update);
+        this._api.updateEvent(update).then((response) => {
+          this._eventsModel.updateEvent(updateType, response);
+        });
         break;
       case UserAction.ADD_EVENT:
         this._eventsModel.addEvent(updateType, update);
@@ -82,7 +85,7 @@ export default class Trip {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        this._eventPresenter[data.id].init(data);
+        this._eventPresenter[data.id].init(data, this._getOffers());
         break;
       case UpdateType.MINOR:
         this._clearTrip();

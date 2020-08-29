@@ -86,7 +86,7 @@ export default class Events extends Observer {
         {},
         event,
         {
-          "base_price": event.price,
+          "base_price": +event.price,
           "date_from": event.time.start,
           "date_to": event.time.end,
           "destination": {
