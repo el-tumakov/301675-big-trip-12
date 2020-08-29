@@ -1,4 +1,4 @@
-import {STOP_TYPES} from "../mock/event-point.js";
+import {STOP_TYPES} from "../const.js";
 
 const Preposition = {
   TO: `to`,

@@ -1,7 +1,7 @@
 import SmartView from "./smart.js";
 import {transformPreposition} from "../utils/specific.js";
 import {toUpperCaseFirstLetter, generateId, getToday} from "../utils/common.js";
-import {Offer, TRIP_TYPES, STOP_TYPES} from "../mock/event-point.js";
+import {TRIP_TYPES, STOP_TYPES} from "../const.js";
 
 const BLANK_EVENT = {
   id: generateId(),
@@ -59,11 +59,11 @@ const createRadioTemplate = (event, types) => {
   );
 };
 
-const createOfferTemplate = (offer, check) => {
+const createOfferTemplate = (offer, check, event) => {
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox visually-hidden" id="event-offer-${getOfferLabel(offer)}-1" type="checkbox" name="event-offer-${getOfferLabel(offer)}" ${check}>
-      <label class="event__offer-label" for="event-offer-${getOfferLabel(offer)}-1">
+      <input class="event__offer-checkbox visually-hidden" id="event-offer-${getOfferLabel(offer)}-${event.id}" type="checkbox" name="event-offer-${getOfferLabel(offer)}" ${check}>
+      <label class="event__offer-label" for="event-offer-${getOfferLabel(offer)}-${event.id}">
       <span class="event__offer-title">${offer.title}</span>
       &plus;
       &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
@@ -72,29 +72,30 @@ const createOfferTemplate = (offer, check) => {
   );
 };
 
-const addOfferTemplate = (type, event) => {
-  const {offers} = event;
+const addOfferTemplate = (event, offersData) => {
+  const {type, offers, id} = event;
 
-  type = type.split(`-`)[0];
+  let offersTemplate = [];
 
-  let offersAll = [];
+  const offer = offersData.find((item) => item.type === type);
+  const offersOfType = offer.offers;
 
-  if (Offer[type]) {
-    for (let i = 0; i < Offer[type].length; i++) {
+  if (offersOfType.length !== 0) {
+    offersOfType.forEach((item) => {
       let check = ``;
 
-      if (offers && offers[i] === Offer[type][i]) {
+      if (offers.include(item)) {
         check = `checked`;
       }
 
-      offersAll.push(createOfferTemplate(Offer[type][i], check));
-    }
+      offersTemplate.push(createOfferTemplate(item, check, id));
+    });
   }
 
-  return offersAll.join(``);
+  return offersTemplate.join(``);
 };
 
-const createEventFormTemplate = (event) => {
+const createEventFormTemplate = (event, offers) => {
   const {
     id,
     type,
@@ -180,7 +181,7 @@ const createEventFormTemplate = (event) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${addOfferTemplate(type, event)}
+            ${addOfferTemplate(event, offers)}
           </div>
         </section>
       </section>
