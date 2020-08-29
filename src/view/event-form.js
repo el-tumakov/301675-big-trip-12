@@ -185,7 +185,7 @@ const createEventFormTemplate = (event, offers, events) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
