@@ -85,11 +85,11 @@ const createRadioTemplate = (event, types) => {
   );
 };
 
-const createOfferTemplate = (offer, check, event) => {
+const createOfferTemplate = (offer, check, id) => {
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox visually-hidden" id="event-offer-${getOfferLabel(offer)}-${event.id}" type="checkbox" name="event-offer-${getOfferLabel(offer)}" ${check}>
-      <label class="event__offer-label" for="event-offer-${getOfferLabel(offer)}-${event.id}">
+      <input class="event__offer-checkbox visually-hidden" id="event-offer-${getOfferLabel(offer)}-${id}" type="checkbox" name="event-offer-${getOfferLabel(offer)}" ${check} data-title="${offer.title}">
+      <label class="event__offer-label" for="event-offer-${getOfferLabel(offer)}-${id}">
       <span class="event__offer-title">${offer.title}</span>
       &plus;
       &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
@@ -240,6 +240,7 @@ export default class EventForm extends SmartView {
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -271,12 +272,42 @@ export default class EventForm extends SmartView {
     this.getElement()
       .querySelector(`.event__favorite-btn`)
       .addEventListener(`click`, this._favoriteClickHandler);
+    this.getElement()
+      .querySelector(`.event__section--offers`)
+      .addEventListener(`change`, this._offersChangeHandler);
+  }
+
+  _offersChangeHandler(evt) {
+    evt.preventDefault();
+
+    let offers = [];
+    const offersOfType = this._offers.find((item) => item.type === this._event.type).offers;
+    const offer = offersOfType.find((item) => item.title === evt.target.dataset.title);
+
+    if (evt.target.checked) {
+      offers = [
+        ...this._event.offers,
+        offer
+      ];
+    } else {
+      const index = this._event.offers.findIndex((item) => item.title === offer.title);
+
+      offers = [
+        ...this._event.offers.slice(0, index),
+        ...this._event.offers.slice(index + 1)
+      ];
+    }
+
+    this.updateData({
+      offers
+    });
   }
 
   _typeChangeHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      type: evt.target.value
+      type: evt.target.value,
+      offers: []
     });
   }
 
@@ -329,7 +360,8 @@ export default class EventForm extends SmartView {
   }
 
   _validateCity() {
-    const cityInputValue = document.querySelector(`.event__input--destination`).value;
+    const cityInputValue = this.getElement().
+      querySelector(`.event__input--destination`).value;
     const cities = getUniqCities(this._events);
 
     return cities.includes(cityInputValue) ? true : false;
