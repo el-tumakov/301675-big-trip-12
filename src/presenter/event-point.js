@@ -95,12 +95,12 @@ export default class Event {
   }
 
   _handleFormSubmit(update) {
-    const isMajorUpdate =
+    const isMinorUpdate =
       !isDatesEqual(this._event.time.start, update.time.start);
 
     this._changeData(
         UserAction.UPDATE_EVENT,
-        isMajorUpdate ? UpdateType.MAJOR : UpdateType.PATCH,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
         update);
     this._replaceFormToEvent();
   }
