@@ -48,23 +48,9 @@ const setFavorite = (isFavorite) => {
   return ``;
 };
 
-const getUniqCities = (events) => {
-  const cities = [];
-
-  events.forEach((item) => {
-    if (!cities.includes(item.city)) {
-      cities.push(item.city);
-    }
-  });
-
-  return cities;
-};
-
-const createCityListTemplate = (events) => {
-  const uniqCities = getUniqCities(events);
-
+const createCityListTemplate = (cities) => {
   return (
-    uniqCities.reduce((prev, current) => {
+    cities.reduce((prev, current) => {
       return prev + (
         `<option value="${current}"></option>`
       );
@@ -125,7 +111,7 @@ const addOfferTemplate = (event, offersData) => {
   return offersTemplate.join(``);
 };
 
-const createEventFormTemplate = (event, offers, events) => {
+const createEventFormTemplate = (event, offers, cities) => {
   const {
     id,
     type,
@@ -164,7 +150,7 @@ const createEventFormTemplate = (event, offers, events) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${city}" list="destination-list-${id}">
           <datalist id="destination-list-${id}">
-            ${createCityListTemplate(events)}
+            ${createCityListTemplate(cities)}
           </datalist>
         </div>
 
@@ -228,9 +214,9 @@ const createEventFormTemplate = (event, offers, events) => {
 };
 
 export default class EventForm extends SmartView {
-  constructor(events, offers, event = BLANK_EVENT) {
+  constructor(cities, offers, event = BLANK_EVENT) {
     super();
-    this._events = events;
+    this._cities = cities;
     this._offers = offers;
     this._event = event;
 
@@ -250,7 +236,7 @@ export default class EventForm extends SmartView {
   }
 
   getTemplate() {
-    return createEventFormTemplate(this._event, this._offers, this._events);
+    return createEventFormTemplate(this._event, this._offers, this._cities);
   }
 
   restoreHandlers() {
@@ -362,8 +348,7 @@ export default class EventForm extends SmartView {
   _validateCity() {
     const cityInputValue = this.getElement().
       querySelector(`.event__input--destination`).value;
-    const cities = getUniqCities(this._events);
 
-    return cities.includes(cityInputValue) ? true : false;
+    return this._cities.includes(cityInputValue) ? true : false;
   }
 }

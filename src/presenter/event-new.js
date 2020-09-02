@@ -16,12 +16,12 @@ export default class EventNew {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init(events, offers) {
+  init(cities, offers) {
     if (this._eventFormComponent !== null) {
       return;
     }
 
-    this._eventFormComponent = new EventFormView(events, offers);
+    this._eventFormComponent = new EventFormView(cities, offers);
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventFormComponent.setDeleteClickHandler(this._handleDeleteClick);
 

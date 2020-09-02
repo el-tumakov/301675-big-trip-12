@@ -48,7 +48,7 @@ export default class Trip {
   }
 
   createEvent() {
-    this._eventNewPresenter.init(this._eventsModel.getEvents(), this._getOffers());
+    this._eventNewPresenter.init(this._getUniqCities(), this._getOffers());
   }
 
   _getOffers() {
@@ -71,6 +71,18 @@ export default class Trip {
     }
 
     return filtredEvents;
+  }
+
+  _getUniqCities() {
+    const cities = [];
+
+    this._eventsModel.getEvents().forEach((item) => {
+      if (!cities.includes(item.city)) {
+        cities.push(item.city);
+      }
+    });
+
+    return cities;
   }
 
   _handleModeChange() {
@@ -101,7 +113,7 @@ export default class Trip {
       case UpdateType.PATCH:
         this._tripInfoPresenter.destroy();
         this._renderTripInfo();
-        this._eventPresenter[data.id].init(this._eventsModel.getEvents(), data, this._getOffers());
+        this._eventPresenter[data.id].init(this._getUniqCities(), data, this._getOffers());
         break;
       case UpdateType.MINOR:
         this._clearTrip();
@@ -179,7 +191,7 @@ export default class Trip {
 
   _renderEvent(eventsListContainer, event) {
     const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleViewAction, this._handleModeChange);
-    eventPresenter.init(this._eventsModel.getEvents(), event, this._getOffers());
+    eventPresenter.init(this._getUniqCities(), event, this._getOffers());
 
     this._eventPresenter[event.id] = eventPresenter;
   }
