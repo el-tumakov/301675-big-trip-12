@@ -1,7 +1,7 @@
 import SmartView from "./smart.js";
 import {transformPreposition} from "../utils/specific.js";
 import {toUpperCaseFirstLetter, generateId, getToday} from "../utils/common.js";
-import {Offer, TRIP_TYPES, STOP_TYPES} from "../mock/event-point.js";
+import {TRIP_TYPES, STOP_TYPES} from "../const.js";
 
 const BLANK_EVENT = {
   id: generateId(),
@@ -19,16 +19,18 @@ const BLANK_EVENT = {
 };
 
 const humanizeDate = (date) => {
-  const year = date
+  const dateData = new Date(date);
+
+  const year = dateData
     .getFullYear()
     .toLocaleString()
     .slice(3);
 
-  return date.toLocaleDateString(`en-GB`)
+  return dateData.toLocaleDateString(`en-GB`)
     .slice(0, -4) +
     year +
     ` ` +
-    date.toLocaleTimeString()
+    dateData.toLocaleTimeString()
     .slice(0, -3);
 };
 
@@ -46,6 +48,30 @@ const setFavorite = (isFavorite) => {
   return ``;
 };
 
+const getUniqCities = (events) => {
+  const cities = [];
+
+  events.forEach((item) => {
+    if (!cities.includes(item.city)) {
+      cities.push(item.city);
+    }
+  });
+
+  return cities;
+};
+
+const createCityListTemplate = (events) => {
+  const uniqCities = getUniqCities(events);
+
+  return (
+    uniqCities.reduce((prev, current) => {
+      return prev + (
+        `<option value="${current}"></option>`
+      );
+    }, ``)
+  );
+};
+
 const createRadioTemplate = (event, types) => {
   return (
     types.reduce((prev, current) => {
@@ -59,11 +85,11 @@ const createRadioTemplate = (event, types) => {
   );
 };
 
-const createOfferTemplate = (offer, check) => {
+const createOfferTemplate = (offer, check, id) => {
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox visually-hidden" id="event-offer-${getOfferLabel(offer)}-1" type="checkbox" name="event-offer-${getOfferLabel(offer)}" ${check}>
-      <label class="event__offer-label" for="event-offer-${getOfferLabel(offer)}-1">
+      <input class="event__offer-checkbox visually-hidden" id="event-offer-${getOfferLabel(offer)}-${id}" type="checkbox" name="event-offer-${getOfferLabel(offer)}" ${check} data-title="${offer.title}">
+      <label class="event__offer-label" for="event-offer-${getOfferLabel(offer)}-${id}">
       <span class="event__offer-title">${offer.title}</span>
       &plus;
       &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
@@ -72,29 +98,34 @@ const createOfferTemplate = (offer, check) => {
   );
 };
 
-const addOfferTemplate = (type, event) => {
-  const {offers} = event;
+const addOfferTemplate = (event, offersData) => {
+  const {type, offers, id} = event;
 
-  type = type.split(`-`)[0];
+  let offersTemplate = [];
 
-  let offersAll = [];
+  const offer = offersData.find((item) => item.type === type);
 
-  if (Offer[type]) {
-    for (let i = 0; i < Offer[type].length; i++) {
+  if (offer.offers.length !== 0) {
+    const offersOfType = offer.offers;
+
+    offersOfType.forEach((item) => {
       let check = ``;
 
-      if (offers && offers[i] === Offer[type][i]) {
-        check = `checked`;
+      for (let i = 0; i < offers.length; i++) {
+        if (offers[i].title === item.title) {
+          check = `checked`;
+          break;
+        }
       }
 
-      offersAll.push(createOfferTemplate(Offer[type][i], check));
-    }
+      offersTemplate.push(createOfferTemplate(item, check, id));
+    });
   }
 
-  return offersAll.join(``);
+  return offersTemplate.join(``);
 };
 
-const createEventFormTemplate = (event) => {
+const createEventFormTemplate = (event, offers, events) => {
   const {
     id,
     type,
@@ -133,9 +164,7 @@ const createEventFormTemplate = (event) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${city}" list="destination-list-${id}">
           <datalist id="destination-list-${id}">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            ${createCityListTemplate(events)}
           </datalist>
         </div>
 
@@ -156,7 +185,7 @@ const createEventFormTemplate = (event) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -180,7 +209,7 @@ const createEventFormTemplate = (event) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${addOfferTemplate(type, event)}
+            ${addOfferTemplate(event, offers)}
           </div>
         </section>
       </section>
@@ -199,8 +228,10 @@ const createEventFormTemplate = (event) => {
 };
 
 export default class EventForm extends SmartView {
-  constructor(event = BLANK_EVENT) {
+  constructor(events, offers, event = BLANK_EVENT) {
     super();
+    this._events = events;
+    this._offers = offers;
     this._event = event;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -209,6 +240,7 @@ export default class EventForm extends SmartView {
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -218,7 +250,7 @@ export default class EventForm extends SmartView {
   }
 
   getTemplate() {
-    return createEventFormTemplate(this._event);
+    return createEventFormTemplate(this._event, this._offers, this._events);
   }
 
   restoreHandlers() {
@@ -240,12 +272,42 @@ export default class EventForm extends SmartView {
     this.getElement()
       .querySelector(`.event__favorite-btn`)
       .addEventListener(`click`, this._favoriteClickHandler);
+    this.getElement()
+      .querySelector(`.event__section--offers`)
+      .addEventListener(`change`, this._offersChangeHandler);
+  }
+
+  _offersChangeHandler(evt) {
+    evt.preventDefault();
+
+    let offers = [];
+    const offersOfType = this._offers.find((item) => item.type === this._event.type).offers;
+    const offer = offersOfType.find((item) => item.title === evt.target.dataset.title);
+
+    if (evt.target.checked) {
+      offers = [
+        ...this._event.offers,
+        offer
+      ];
+    } else {
+      const index = this._event.offers.findIndex((item) => item.title === offer.title);
+
+      offers = [
+        ...this._event.offers.slice(0, index),
+        ...this._event.offers.slice(index + 1)
+      ];
+    }
+
+    this.updateData({
+      offers
+    });
   }
 
   _typeChangeHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      type: evt.target.value
+      type: evt.target.value,
+      offers: []
     });
   }
 
@@ -272,6 +334,11 @@ export default class EventForm extends SmartView {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
+
+    if (!this._validateCity()) {
+      return;
+    }
+
     this._callback.formSubmit(this._event);
   }
 
@@ -290,5 +357,13 @@ export default class EventForm extends SmartView {
     this.getElement()
       .querySelector(`.event__reset-btn`)
       .addEventListener(`click`, this._deleteClickHandler);
+  }
+
+  _validateCity() {
+    const cityInputValue = this.getElement().
+      querySelector(`.event__input--destination`).value;
+    const cities = getUniqCities(this._events);
+
+    return cities.includes(cityInputValue) ? true : false;
   }
 }

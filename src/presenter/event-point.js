@@ -26,14 +26,14 @@ export default class Event {
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
-  init(event) {
+  init(events, event, offers) {
     this._event = event;
 
     const prevEventComponent = this._eventComponent;
     const prevEventFormComponent = this._eventFormComponent;
 
     this._eventComponent = new EventPointView(event);
-    this._eventFormComponent = new EventFormView(event);
+    this._eventFormComponent = new EventFormView(events, offers, event);
 
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
@@ -84,12 +84,12 @@ export default class Event {
   }
 
   _handleFormSubmit(update) {
-    const isMinorUpdate =
+    const isMajorUpdate =
       !isDatesEqual(this._event.time.start, update.time.start);
 
     this._changeData(
         UserAction.UPDATE_EVENT,
-        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+        isMajorUpdate ? UpdateType.MAJOR : UpdateType.PATCH,
         update);
     this._replaceFormToEvent();
   }
@@ -97,7 +97,7 @@ export default class Event {
   _handleDeleteClick(event) {
     this._changeData(
         UserAction.DELETE_EVENT,
-        UpdateType.MINOR,
+        UpdateType.MAJOR,
         event
     );
   }

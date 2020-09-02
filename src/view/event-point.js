@@ -15,7 +15,9 @@ const Time = {
 const {MS, S, M, H} = Time;
 
 const humanizeTime = (date) => {
-  return date.toLocaleTimeString().slice(0, -3);
+  const dateData = new Date(date);
+
+  return dateData.toLocaleTimeString().slice(0, -3);
 };
 
 const humanizePeriod = (period) => {
@@ -77,9 +79,9 @@ const createEventPointTemplate = (event) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${time.start.toISOString()}">${he.encode(humanizeTime(time.start))}</time>
+            <time class="event__start-time" datetime="${time.start}">${he.encode(humanizeTime(time.start))}</time>
             &mdash;
-            <time class="event__end-time" datetime="${time.end.toISOString()}">${he.encode(humanizeTime(time.end))}</time>
+            <time class="event__end-time" datetime="${time.end}">${he.encode(humanizeTime(time.end))}</time>
           </p>
           <p class="event__duration">${humanizePeriod(period)}</p>
         </div>
