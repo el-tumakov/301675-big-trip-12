@@ -1,3 +1,4 @@
+import StatsView from "../view/stats.js";
 import SortView from "../view/sort.js";
 import TripDaysView from "../view/trip-days.js";
 import DayView from "../view/day.js";
@@ -10,23 +11,25 @@ import {render, RenderPosition, remove} from "../utils/render.js";
 import {getUniqueDates} from "../utils/specific.js";
 import {sortEventTime, sortEventPrice} from "../utils/event.js";
 import {filter} from "../utils/filter.js";
-import {SortType, UserAction, UpdateType} from "../const.js";
+import {SortType, UserAction, UpdateType, MenuItem} from "../const.js";
 import moment from "moment";
 
 const {BEFOREEND} = RenderPosition;
 
 export default class Trip {
-  constructor(tripContainer, offersModel, eventsModel, filterModel, api) {
+  constructor(tripContainer, offersModel, eventsModel, filterModel, siteMenuModel, api) {
     this._tripContainer = tripContainer;
     this._offersModel = offersModel;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
+    this._siteMenuModel = siteMenuModel;
     this._eventPresenter = {};
     this._tripInfoPresenter = {};
     this._isLoading = true;
     this._api = api;
 
     this._sortComponent = null;
+    this._statsComponent = null;
 
     this._sortComponent = new SortView();
     this._tripDaysComponent = new TripDaysView();
@@ -37,19 +40,31 @@ export default class Trip {
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
-
-    this._eventsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    this._handleMenuModel = this._handleMenuModel.bind(this);
 
     this._eventNewPresenter = new EventNewPresenter(this._tripContainer, this._handleViewAction);
+
+    this._siteMenuModel.addObserver(this._handleMenuModel);
   }
 
   init() {
+    this._eventsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
     this._renderTrip();
   }
 
-  createEvent() {
-    this._eventNewPresenter.init(this._getUniqCities(), this._getOffers());
+  destroy() {
+    this._clearTrip({resetSortType: true});
+
+    this._eventsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+
+    remove(this._tripDaysComponent);
+  }
+
+  createEvent(callback) {
+    this._eventNewPresenter.init(this._getUniqCities(), this._getOffers(), callback);
   }
 
   _getOffers() {
@@ -116,10 +131,14 @@ export default class Trip {
         this._eventPresenter[data.id].init(this._getUniqCities(), data, this._getOffers());
         break;
       case UpdateType.MINOR:
+        this._tripInfoPresenter.destroy();
+        this._renderTripInfo();
         this._clearTrip();
         this._renderTrip();
         break;
       case UpdateType.MAJOR:
+        this._tripInfoPresenter.destroy();
+        this._renderTripInfo();
         this._clearTrip({resetSortType: true});
         this._renderTrip();
         break;
@@ -127,7 +146,24 @@ export default class Trip {
         this._isLoading = false;
         remove(this._loadingComponent);
         this._currentSortType = SortType.DEFAULT;
+        this._renderTripInfo();
         this._renderTrip();
+        break;
+    }
+  }
+
+  _handleMenuModel(menuItem) {
+    switch (menuItem) {
+      case MenuItem.TABLE:
+        this.init();
+        remove(this._statsComponent);
+        break;
+      case MenuItem.STATS:
+        const pageMainElement = document.querySelector(`.page-main`);
+        const pageBodyElement = pageMainElement.querySelector(`.page-body__container`);
+        this.destroy();
+        this._statsComponent = new StatsView(this._eventsModel.getEvents());
+        render(pageBodyElement, this._statsComponent, BEFOREEND);
         break;
     }
   }
@@ -138,6 +174,7 @@ export default class Trip {
     }
 
     this._currentSortType = sortType;
+    this._tripInfoPresenter.destroy();
     this._clearTrip();
     this._renderTrip();
   }
@@ -221,7 +258,6 @@ export default class Trip {
       .forEach((presenter) => presenter.destroy());
     this._eventPresenter = {};
 
-    this._tripInfoPresenter.destroy();
     remove(this._noEventComponent);
     remove(this._loadingComponent);
     remove(this._sortComponent);
@@ -248,7 +284,6 @@ export default class Trip {
       return;
     }
 
-    this._renderTripInfo();
     this._renderSort();
     this._renderTripDays();
     this._renderDays();
