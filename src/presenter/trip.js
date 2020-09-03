@@ -7,10 +7,11 @@ import TripInfoPresenter from "./trip-info.js";
 import EventPointPresenter from "./event-point.js";
 import EventNewPresenter from "./event-new.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
-import {getUniqueDates, toISODate} from "../utils/specific.js";
+import {getUniqueDates} from "../utils/specific.js";
 import {sortEventTime, sortEventPrice} from "../utils/event.js";
 import {filter} from "../utils/filter.js";
 import {SortType, UserAction, UpdateType} from "../const.js";
+import moment from "moment";
 
 const {BEFOREEND} = RenderPosition;
 
@@ -58,8 +59,7 @@ export default class Trip {
   _getEvents() {
     const filterType = this._filterModel.getFilter();
 
-    const events = this._eventsModel.getEvents()
-      .slice().sort((a, b) => a.time.start - b.time.start);
+    const events = this._eventsModel.getEvents();
 
     const filtredEvents = filter[filterType](events);
 
@@ -202,8 +202,7 @@ export default class Trip {
 
       if (this._currentSortType === SortType.DEFAULT) {
         const {time} = item;
-
-        const timeISO = toISODate(time.start);
+        const timeISO = moment(time.start).format(`YYYY-MM-DD`);
         const timeElement = this._tripContainer
           .querySelector(`.day__date[datetime="${timeISO}"]`);
         const dayElement = timeElement.closest(`.day`);
