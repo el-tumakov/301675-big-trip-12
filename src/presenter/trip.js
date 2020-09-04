@@ -1,3 +1,4 @@
+import NewEventBtnView from "../view/new-event-btn.js";
 import StatsView from "../view/stats.js";
 import SortView from "../view/sort.js";
 import TripDaysView from "../view/trip-days.js";
@@ -11,7 +12,7 @@ import {render, RenderPosition, remove} from "../utils/render.js";
 import {getUniqueDates} from "../utils/specific.js";
 import {sortEventTime, sortEventPrice} from "../utils/event.js";
 import {filter} from "../utils/filter.js";
-import {SortType, UserAction, UpdateType, MenuItem} from "../const.js";
+import {SortType, UserAction, UpdateType, MenuItem, FilterType} from "../const.js";
 import moment from "moment";
 
 const {BEFOREEND} = RenderPosition;
@@ -35,6 +36,7 @@ export default class Trip {
     this._tripDaysComponent = new TripDaysView();
     this._loadingComponent = new LoadingView();
     this._noEventComponent = new NoEventView();
+    this._newEventBtnComponent = new NewEventBtnView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -63,8 +65,15 @@ export default class Trip {
     remove(this._tripDaysComponent);
   }
 
-  createEvent(callback) {
-    this._eventNewPresenter.init(this._getUniqCities(), this._getOffers(), callback);
+  createEvent() {
+    this._clearTrip({resetSortType: true});
+    this._renderSort();
+
+    this._eventNewPresenter.init(this._getUniqCities(), this._getOffers());
+
+    this._renderTripDays();
+    this._renderDays();
+    this._renderEvents();
   }
 
   _getOffers() {
@@ -144,6 +153,8 @@ export default class Trip {
         break;
       case UpdateType.INIT:
         this._isLoading = false;
+        this._newEventBtnComponent.getElement().disabled = false;
+        this._tripInfoPresenter.destroy();
         remove(this._loadingComponent);
         this._currentSortType = SortType.DEFAULT;
         this._renderTripInfo();
@@ -155,8 +166,11 @@ export default class Trip {
   _handleMenuModel(menuItem) {
     switch (menuItem) {
       case MenuItem.TABLE:
-        this.init();
-        remove(this._statsComponent);
+        if (this._statsComponent) {
+          this.destroy();
+          this.init();
+          remove(this._statsComponent);
+        }
         break;
       case MenuItem.STATS:
         const pageMainElement = document.querySelector(`.page-main`);
@@ -165,6 +179,10 @@ export default class Trip {
         this._statsComponent = new StatsView(this._eventsModel.getEvents());
         render(pageBodyElement, this._statsComponent, BEFOREEND);
         break;
+      case MenuItem.NEW_EVENT:
+        this._siteMenuModel.setMenuItem(MenuItem.TABLE);
+        this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+        this.createEvent();
     }
   }
 
@@ -174,7 +192,6 @@ export default class Trip {
     }
 
     this._currentSortType = sortType;
-    this._tripInfoPresenter.destroy();
     this._clearTrip();
     this._renderTrip();
   }
@@ -270,7 +287,9 @@ export default class Trip {
 
   _renderTrip() {
     if (this._isLoading) {
+      this._renderTripInfo();
       this._renderLoading();
+      this._newEventBtnComponent.getElement().disabled = true;
 
       return;
     }

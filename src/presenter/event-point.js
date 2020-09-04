@@ -74,12 +74,14 @@ export default class Event {
     document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
+    this._eventFormComponent.setDatepickers();
   }
 
   _replaceFormToEvent() {
     replace(this._eventComponent, this._eventFormComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
+    this._eventFormComponent.removeDatepickers();
   }
 
   _escKeyDownHandler(evt) {

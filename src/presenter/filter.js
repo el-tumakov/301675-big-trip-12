@@ -29,9 +29,8 @@ export default class Filter {
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
     this._filterTitleComponent = new TitleH2View(this._filterComponent.getTitle());
 
-    render(this._filterContainer, this._filterTitleComponent, RenderPosition.BEFOREEND);
-
     if (prevFilterComponent === null) {
+      render(this._filterContainer, this._filterTitleComponent, RenderPosition.BEFOREEND);
       render(this._filterContainer, this._filterComponent, RenderPosition.BEFOREEND);
       return;
     }

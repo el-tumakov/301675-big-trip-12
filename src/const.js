@@ -41,5 +41,6 @@ export const FilterType = {
 
 export const MenuItem = {
   TABLE: `TABLE`,
-  STATS: `STATS`
+  STATS: `STATS`,
+  NEW_EVENT: `NEW_EVENT`
 };

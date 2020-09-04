@@ -224,8 +224,6 @@ export default class EventForm extends SmartView {
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
-    this._setDatepickerStart();
-    this._setDatepickerEnd();
   }
 
   reset(event) {
@@ -240,8 +238,6 @@ export default class EventForm extends SmartView {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteClickHandler(this._callback.deleteClick);
-    this._setDatepickerStart();
-    this._setDatepickerEnd();
   }
 
   _setInnerHandlers() {
@@ -262,12 +258,17 @@ export default class EventForm extends SmartView {
       .addEventListener(`change`, this._offersChangeHandler);
   }
 
-  _setDatepickerStart() {
-    if (this._datepickerStart) {
-      this._datepickerStart.destroy();
-      this._datepickerStart = null;
-    }
+  setDatepickers() {
+    this._setDatepickerStart();
+    this._setDatepickerEnd();
+  }
 
+  removeDatepickers() {
+    this._datepickerStart.destroy();
+    this._datepickerEnd.destroy();
+  }
+
+  _setDatepickerStart() {
     this._datepickerStart = flatpickr(
         this.getElement().querySelector(`input[name="event-start-time"]`),
         {
@@ -347,8 +348,6 @@ export default class EventForm extends SmartView {
 
       end = date;
       timeEndElement.value = moment(end).format(`DD/MM/YY HH:mm`);
-
-      this._setDatepickerEnd();
     }
 
     this.updateData({
@@ -369,8 +368,6 @@ export default class EventForm extends SmartView {
 
       start = date;
       timeStartElement.value = moment(start).format(`DD/MM/YY HH:mm`);
-
-      this._setDatepickerStart();
     }
 
     this.updateData({
