@@ -182,6 +182,7 @@ export default class Trip {
         this.destroy();
         this._statsComponent = new StatsView(this._eventsModel.getEvents());
         render(pageBodyElement, this._statsComponent, BEFOREEND);
+        this._statsComponent.init();
         break;
       case MenuItem.NEW_EVENT:
         this._siteMenuModel.setMenuItem(MenuItem.TABLE);
