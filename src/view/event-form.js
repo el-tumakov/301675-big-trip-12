@@ -12,7 +12,7 @@ const BLANK_EVENT = {
   city: ``,
   offers: [],
   description: ``,
-  photo: ``,
+  photos: ``,
   time: {
     start: getToday(),
     end: getToday()
@@ -98,7 +98,32 @@ const addOfferTemplate = (event, offersData) => {
   return offersTemplate.join(``);
 };
 
-const createEventFormTemplate = (event, offers, cities) => {
+const createPhotosTemplate = (photos) => {
+  return (
+    photos.reduce((prev, current) => {
+      return prev + (
+        `<img class="event__photo" src="${current.src}" alt="${current.description}">`
+      );
+    }, ``)
+  );
+};
+
+const createDesinationTemplate = (description, photos) => {
+  return (
+    `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${description}</p>
+
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${createPhotosTemplate(photos)}
+        </div>
+      </div>
+    </section>`
+  );
+};
+
+const createEventFormTemplate = (event, offers, destination) => {
   const {
     id,
     type,
@@ -108,11 +133,24 @@ const createEventFormTemplate = (event, offers, cities) => {
     isFavorite
   } = event;
 
+  const cities = [];
+  let photos;
+  let description;
+
+  destination.forEach((item) => {
+    cities.push(item.name);
+
+    if (item.name === city) {
+      photos = item.pictures;
+      description = item.description;
+    }
+  });
+
   const timeStart = moment(time.start).format(`DD/MM/YY HH:mm`);
   const timeEnd = moment(time.end).format(`DD/MM/YY HH:mm`);
 
   const form = (
-    `<form class="event  event--edit" action="#" method="post">
+    `<form class="${event ? `trip-events__item` : ``} event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
@@ -188,11 +226,13 @@ const createEventFormTemplate = (event, offers, cities) => {
             ${addOfferTemplate(event, offers)}
           </div>
         </section>
+
+        ${city !== `` ? createDesinationTemplate(description, photos) : ``}
       </section>
     </form>`
   );
 
-  if (city === ``) {
+  if (event) {
     return form;
   }
 
@@ -204,9 +244,9 @@ const createEventFormTemplate = (event, offers, cities) => {
 };
 
 export default class EventForm extends SmartView {
-  constructor(cities, offers, event = BLANK_EVENT) {
+  constructor(destination, offers, event = BLANK_EVENT) {
     super();
-    this._cities = cities;
+    this._destination = destination;
     this._offers = offers;
     this._event = event;
 
@@ -231,7 +271,7 @@ export default class EventForm extends SmartView {
   }
 
   getTemplate() {
-    return createEventFormTemplate(this._event, this._offers, this._cities);
+    return createEventFormTemplate(this._event, this._offers, this._destination);
   }
 
   restoreHandlers() {
@@ -333,9 +373,17 @@ export default class EventForm extends SmartView {
 
   _cityChangeHandler(evt) {
     evt.preventDefault();
+
+    const city = evt.target.value;
+    const destination = this._destination.find((item) => item.name === city);
+    const description = destination.description;
+    const photos = destination.pictures;
+
     this.updateData({
-      city: evt.target.value
-    }, true);
+      city,
+      description,
+      photos
+    });
   }
 
   _timeStartChangeHandler([userDate]) {
@@ -423,6 +471,6 @@ export default class EventForm extends SmartView {
     const cityInputValue = this.getElement().
       querySelector(`.event__input--destination`).value;
 
-    return this._cities.includes(cityInputValue) ? true : false;
+    return this._destination.indexOf((item) => item.name === cityInputValue) ? true : false;
   }
 }

@@ -16,16 +16,15 @@ export default class EventNew {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init(cities, offers) {
+  init(destination, offers) {
     if (this._eventFormComponent !== null) {
       return;
     }
 
-    this._eventFormComponent = new EventFormView(cities, offers);
+    this._eventFormComponent = new EventFormView(destination, offers);
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventFormComponent.setDeleteClickHandler(this._handleDeleteClick);
 
-    this._eventFormComponent.getElement().classList.add(`trip-events__item`);
     render(this._eventListContainer, this._eventFormComponent, BEFOREEND);
     this._eventFormComponent.setDatepickers();
 

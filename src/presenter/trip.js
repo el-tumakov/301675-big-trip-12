@@ -18,12 +18,21 @@ import moment from "moment";
 const {BEFOREEND} = RenderPosition;
 
 export default class Trip {
-  constructor(tripContainer, offersModel, eventsModel, filterModel, siteMenuModel, api) {
+  constructor(
+      tripContainer,
+      offersModel,
+      eventsModel,
+      filterModel,
+      siteMenuModel,
+      destinationModel,
+      api
+  ) {
     this._tripContainer = tripContainer;
     this._offersModel = offersModel;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
     this._siteMenuModel = siteMenuModel;
+    this._destinationModel = destinationModel;
     this._eventPresenter = {};
     this._tripInfoPresenter = {};
     this._isLoading = true;
@@ -67,9 +76,12 @@ export default class Trip {
 
   createEvent() {
     this._clearTrip({resetSortType: true});
-    this._renderSort();
 
-    this._eventNewPresenter.init(this._getUniqCities(), this._getOffers());
+    if (this._getEvents().length !== 0) {
+      this._renderSort();
+    }
+
+    this._eventNewPresenter.init(this._getDestination(), this._getOffers());
 
     this._renderTripDays();
     this._renderDays();
@@ -78,6 +90,10 @@ export default class Trip {
 
   _getOffers() {
     return this._offersModel.getOffers();
+  }
+
+  _getDestination() {
+    return this._destinationModel.getDestination();
   }
 
   _getEvents() {
@@ -95,18 +111,6 @@ export default class Trip {
     }
 
     return filtredEvents;
-  }
-
-  _getUniqCities() {
-    const cities = [];
-
-    this._eventsModel.getEvents().forEach((item) => {
-      if (!cities.includes(item.city)) {
-        cities.push(item.city);
-      }
-    });
-
-    return cities;
   }
 
   _handleModeChange() {
@@ -137,7 +141,7 @@ export default class Trip {
       case UpdateType.PATCH:
         this._tripInfoPresenter.destroy();
         this._renderTripInfo();
-        this._eventPresenter[data.id].init(this._getUniqCities(), data, this._getOffers());
+        this._eventPresenter[data.id].init(this._getDestination(), data, this._getOffers());
         break;
       case UpdateType.MINOR:
         this._tripInfoPresenter.destroy();
@@ -245,7 +249,7 @@ export default class Trip {
 
   _renderEvent(eventsListContainer, event) {
     const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleViewAction, this._handleModeChange);
-    eventPresenter.init(this._getUniqCities(), event, this._getOffers());
+    eventPresenter.init(this._getDestination(), event, this._getOffers());
 
     this._eventPresenter[event.id] = eventPresenter;
   }

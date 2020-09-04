@@ -4,6 +4,7 @@ import TripPresenter from "./presenter/trip.js";
 import EventsModel from "./model/events.js";
 import FilterModel from "./model/filter.js";
 import OffersModel from "./model/offers.js";
+import DestinationModel from "./model/destination.js";
 import SiteMenuModel from "./model/site-menu.js";
 import {UpdateType} from "./const.js";
 import Api from "./api.js";
@@ -22,11 +23,20 @@ const api = new Api(END_POINT, AUTHORIZATION);
 const eventsModel = new EventsModel();
 const filterModel = new FilterModel();
 const offersModel = new OffersModel();
+const destinationModel = new DestinationModel();
 const siteMenuModel = new SiteMenuModel();
 
 const siteMenuPresenter = new SiteMenuPresenter(tripControlsElement, siteMenuModel);
 const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
-const tripPresenter = new TripPresenter(tripEventsElement, offersModel, eventsModel, filterModel, siteMenuModel, api);
+const tripPresenter = new TripPresenter(
+    tripEventsElement,
+    offersModel,
+    eventsModel,
+    filterModel,
+    siteMenuModel,
+    destinationModel,
+    api
+);
 
 siteMenuPresenter.init();
 filterPresenter.init();
@@ -47,4 +57,12 @@ api.getOffers()
   })
   .catch(() => {
     offersModel.setOffers([]);
+  });
+
+api.getDestination()
+  .then((destination) => {
+    destinationModel.setDestination(destination);
+  })
+  .catch(() => {
+    destinationModel.setDestination([]);
   });

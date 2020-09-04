@@ -62,7 +62,7 @@ export default class Events extends Observer {
         {
           city: event.destination.name,
           description: event.destination.description,
-          photo: event.destination.pictures,
+          photos: event.destination.pictures,
           time: {
             start: event.date_from,
             end: event.date_to
@@ -92,7 +92,7 @@ export default class Events extends Observer {
           "destination": {
             "description": event.description,
             "name": event.city,
-            "pictures": event.photo
+            "pictures": event.photos
           },
           "is_favorite": event.isFavorite
         }
@@ -100,7 +100,7 @@ export default class Events extends Observer {
 
     delete adaptedEvent.city;
     delete adaptedEvent.description;
-    delete adaptedEvent.photo;
+    delete adaptedEvent.photos;
     delete adaptedEvent.time;
     delete adaptedEvent.price;
     delete adaptedEvent.isFavorite;
