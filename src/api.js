@@ -6,8 +6,7 @@ const Method = {
 };
 
 const SuccessHTTPStatusRange = {
-  MIN: 200,
-  MAX: 299
+  OK: 200
 };
 
 export default class Api {
@@ -56,10 +55,7 @@ export default class Api {
   }
 
   static checkStatus(response) {
-    if (
-      response.status < SuccessHTTPStatusRange.MIN &&
-      response.status > SuccessHTTPStatusRange.MAX
-    ) {
+    if (response.status !== SuccessHTTPStatusRange.OK) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
 

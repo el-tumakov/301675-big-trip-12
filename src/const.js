@@ -14,6 +14,12 @@ export const STOP_TYPES = [
   `restaurant`
 ];
 
+export const SortType = {
+  DEFAULT: `default`,
+  TIME: `time`,
+  PRICE: `price`
+};
+
 export const UserAction = {
   UPDATE_EVENT: `UPDATE_EVENT`,
   ADD_EVENT: `ADD_EVENT`,

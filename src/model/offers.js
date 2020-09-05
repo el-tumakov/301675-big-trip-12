@@ -8,8 +8,6 @@ export default class Offers extends Observer {
 
   setOffers(offers) {
     this._offers = offers.slice();
-
-    this._notify();
   }
 
   getOffers() {

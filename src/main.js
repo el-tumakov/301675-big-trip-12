@@ -48,7 +48,8 @@ tripPresenter.init();
 api.getOffers()
   .then((offers) => {
     offersModel.setOffers(offers);
-
+  })
+  .then(() => {
     api.getEvents()
       .then((events) => {
         eventsModel.setEvents(UpdateType.INIT, events);
