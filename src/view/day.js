@@ -1,15 +1,15 @@
 import AbstractView from "./abstract.js";
-import {getMonthString} from "../utils/specific.js";
 import {SortType} from "../const.js";
+import moment from "moment";
 
 const createDayTemplate = (date, counter, sortType) => {
-  const currentDate = new Date(Date.parse(date));
+  const currentDate = new Date(date);
 
   return (
     `<li class="trip-days__item day">
         <div class="day__info">
           ${sortType !== SortType.DEFAULT ? `` : `<span class="day__counter">${counter + 1}</span>
-          <time class="day__date" datetime="${date}">${getMonthString(currentDate)} ${currentDate.getDate()}</time>`}
+          <time class="day__date" datetime="${date}">${moment(currentDate).format(`MMM`)} ${currentDate.getDate()}</time>`}
         </div>
 
       <ul class="trip-events__list">

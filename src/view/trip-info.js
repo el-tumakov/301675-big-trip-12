@@ -1,5 +1,5 @@
 import AbstractView from "./abstract.js";
-import {getMonthString} from "../utils/specific.js";
+import moment from "moment";
 
 const createTripInfoTemplate = (events) => {
   let monthStart = ``;
@@ -11,9 +11,8 @@ const createTripInfoTemplate = (events) => {
   if (events.length) {
     const startDate = new Date(events[0].time.start);
     const endDate = new Date(events[events.length - 1].time.end);
-
-    monthStart = getMonthString(startDate);
-    monthEnd = getMonthString(endDate);
+    monthStart = moment(startDate).format(`MMM`);
+    monthEnd = moment(endDate).format(`MMM`);
 
     dayStart = startDate.getDate() + `&nbsp;&mdash;&nbsp;`;
     dayEnd = endDate.getDate();

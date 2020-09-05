@@ -2,6 +2,7 @@ import he from "he";
 import AbstractView from "./abstract.js";
 import {transformPreposition} from "../utils/specific.js";
 import {toUpperCaseFirstLetter} from "../utils/common.js";
+import moment from "moment";
 
 const MAX_OFFERS = 3;
 
@@ -13,12 +14,6 @@ const Time = {
 };
 
 const {MS, S, M, H} = Time;
-
-const humanizeTime = (date) => {
-  const dateData = new Date(date);
-
-  return dateData.toLocaleTimeString().slice(0, -3);
-};
 
 const humanizePeriod = (period) => {
   let stringPeriod = ``;
@@ -62,12 +57,15 @@ const createOffersTemplate = (offers) => {
 
 const createEventPointTemplate = (event) => {
   const {type, city, offers, time, price} = event;
-  const diff = time.end - time.start;
+  const diff = moment(time.end) - moment(time.start);
   const period = {
     day: Math.floor(diff / MS / S / M / H),
     hour: Math.floor(diff / MS / S / M % H),
     minute: Math.floor(diff / MS / S % M)
   };
+
+  const timeStart = moment(time.start).format(`HH:mm`);
+  const timeEnd = moment(time.end).format(`HH:mm`);
 
   return (
     `<li class="trip-events__item">
@@ -79,9 +77,9 @@ const createEventPointTemplate = (event) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${time.start}">${he.encode(humanizeTime(time.start))}</time>
+            <time class="event__start-time" datetime="${time.start}">${timeStart}</time>
             &mdash;
-            <time class="event__end-time" datetime="${time.end}">${he.encode(humanizeTime(time.end))}</time>
+            <time class="event__end-time" datetime="${time.end}">${timeEnd}</time>
           </p>
           <p class="event__duration">${humanizePeriod(period)}</p>
         </div>

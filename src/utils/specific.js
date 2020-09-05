@@ -1,4 +1,5 @@
 import {STOP_TYPES} from "../const.js";
+import moment from "moment";
 
 const Preposition = {
   TO: `to`,
@@ -15,32 +16,20 @@ export const transformPreposition = (type) => {
   return TO;
 };
 
-export const getMonthString = (date) => {
-  let month = date.toLocaleString(`en-GB`, {
-    month: `long`
-  });
-
-  return month.toUpperCase().slice(0, 3);
-};
-
-export const toISODate = (date) => {
-  return date.slice(0, -14);
-};
-
 export const getUniqueDates = (data) => {
   const dates = [];
 
   data.forEach((item) => {
-    let date = toISODate(item.time.start);
+    let date = moment(item.time.start).format(`YYYY-MM-DD`);
 
     if (!dates.includes(date)) {
       dates.push(date);
     }
   });
 
-  return dates;
+  return dates.sort((prev, next) => new Date(prev) - new Date(next));
 };
 
 export const isDatesEqual = (dateA, dateB) => {
-  return toISODate(dateA) === toISODate(dateB);
+  return moment(dateA) === moment(dateB);
 };

@@ -2,6 +2,9 @@ import SmartView from "./smart.js";
 import {transformPreposition} from "../utils/specific.js";
 import {toUpperCaseFirstLetter, generateId, getToday} from "../utils/common.js";
 import {TRIP_TYPES, STOP_TYPES} from "../const.js";
+import flatpickr from "flatpickr";
+import moment from "moment";
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_EVENT = {
   id: generateId(),
@@ -16,22 +19,6 @@ const BLANK_EVENT = {
   },
   price: ``,
   isFavorite: false,
-};
-
-const humanizeDate = (date) => {
-  const dateData = new Date(date);
-
-  const year = dateData
-    .getFullYear()
-    .toLocaleString()
-    .slice(3);
-
-  return dateData.toLocaleDateString(`en-GB`)
-    .slice(0, -4) +
-    year +
-    ` ` +
-    dateData.toLocaleTimeString()
-    .slice(0, -3);
 };
 
 const getOfferLabel = (offer) => {
@@ -121,6 +108,9 @@ const createEventFormTemplate = (event, offers, cities) => {
     isFavorite
   } = event;
 
+  const timeStart = moment(time.start).format(`DD/MM/YY HH:mm`);
+  const timeEnd = moment(time.end).format(`DD/MM/YY HH:mm`);
+
   const form = (
     `<form class="event  event--edit" action="#" method="post">
       <header class="event__header">
@@ -158,12 +148,12 @@ const createEventFormTemplate = (event, offers, cities) => {
           <label class="visually-hidden" for="event-start-time-${id}">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${humanizeDate(time.start)}">
+          <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${timeStart}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-${id}">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${humanizeDate(time.end)}">
+          <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${timeEnd}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -220,15 +210,22 @@ export default class EventForm extends SmartView {
     this._offers = offers;
     this._event = event;
 
+    this._datepickerStart = null;
+    this._datepickerEnd = null;
+
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._cityChangeHandler = this._cityChangeHandler.bind(this);
+    this._timeStartChangeHandler = this._timeStartChangeHandler.bind(this);
+    this._timeEndChangeHandler = this._timeEndChangeHandler.bind(this);
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepickerStart();
+    this._setDatepickerEnd();
   }
 
   reset(event) {
@@ -243,6 +240,8 @@ export default class EventForm extends SmartView {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteClickHandler(this._callback.deleteClick);
+    this._setDatepickerStart();
+    this._setDatepickerEnd();
   }
 
   _setInnerHandlers() {
@@ -261,6 +260,40 @@ export default class EventForm extends SmartView {
     this.getElement()
       .querySelector(`.event__section--offers`)
       .addEventListener(`change`, this._offersChangeHandler);
+  }
+
+  _setDatepickerStart() {
+    if (this._datepickerStart) {
+      this._datepickerStart.destroy();
+      this._datepickerStart = null;
+    }
+
+    this._datepickerStart = flatpickr(
+        this.getElement().querySelector(`input[name="event-start-time"]`),
+        {
+          "enableTime": true,
+          "dateFormat": `d/m/y H:i`,
+          "time_24hr": true,
+          "onChange": this._timeStartChangeHandler
+        }
+    );
+  }
+
+  _setDatepickerEnd() {
+    if (this._datepickerEnd) {
+      this._datepickerEnd.destroy();
+      this._datepickerEnd = null;
+    }
+
+    this._datepickerEnd = flatpickr(
+        this.getElement().querySelector(`input[name="event-end-time"]`),
+        {
+          "enableTime": true,
+          "dateFormat": `d/m/y H:i`,
+          "time_24hr": true,
+          "onChange": this._timeEndChangeHandler
+        }
+    );
   }
 
   _offersChangeHandler(evt) {
@@ -301,6 +334,50 @@ export default class EventForm extends SmartView {
     evt.preventDefault();
     this.updateData({
       city: evt.target.value
+    }, true);
+  }
+
+  _timeStartChangeHandler([userDate]) {
+    const date = userDate.toISOString();
+    let end = this._event.time.end;
+
+    if (userDate > moment(end)) {
+      const timeEndElement = this.getElement()
+        .querySelector(`input[name="event-end-time"]`);
+
+      end = date;
+      timeEndElement.value = moment(end).format(`DD/MM/YY HH:mm`);
+
+      this._setDatepickerEnd();
+    }
+
+    this.updateData({
+      time: {
+        start: date,
+        end
+      }
+    }, true);
+  }
+
+  _timeEndChangeHandler([userDate]) {
+    const date = userDate.toISOString();
+    let start = this._event.time.start;
+
+    if (userDate < moment(start)) {
+      const timeStartElement = this.getElement()
+        .querySelector(`input[name="event-start-time"]`);
+
+      start = date;
+      timeStartElement.value = moment(start).format(`DD/MM/YY HH:mm`);
+
+      this._setDatepickerStart();
+    }
+
+    this.updateData({
+      time: {
+        start,
+        end: date
+      }
     }, true);
   }
 
