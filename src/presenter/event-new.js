@@ -13,6 +13,7 @@ export default class EventNew {
 
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
   init(events, offers) {
@@ -25,6 +26,8 @@ export default class EventNew {
     this._eventFormComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     render(this._eventListContainer, this._eventFormComponent, AFTERBEGIN);
+
+    document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
 
   destroy() {
@@ -34,6 +37,8 @@ export default class EventNew {
 
     remove(this._eventFormComponent);
     this._eventFormComponent = null;
+
+    document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }
 
   _handleFormSubmit(event) {
@@ -47,5 +52,12 @@ export default class EventNew {
 
   _handleDeleteClick() {
     this.destroy();
+  }
+
+  _escKeyDownHandler(evt) {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      this.destroy();
+    }
   }
 }

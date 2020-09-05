@@ -2,6 +2,7 @@ import SortView from "../view/sort.js";
 import TripDaysView from "../view/trip-days.js";
 import DayView from "../view/day.js";
 import LoadingView from "../view/loading.js";
+import NoEventView from "../view/no-event.js";
 import TripInfoPresenter from "./trip-info.js";
 import EventPointPresenter from "./event-point.js";
 import EventNewPresenter from "./event-new.js";
@@ -26,6 +27,7 @@ export default class Trip {
     this._sortComponent = new SortView();
     this._tripDaysComponent = new TripDaysView();
     this._loadingComponent = new LoadingView();
+    this._noEventComponent = new NoEventView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -128,6 +130,10 @@ export default class Trip {
     render(this._tripContainer, this._loadingComponent, BEFOREEND);
   }
 
+  _renderNoEvent() {
+    render(this._tripContainer, this._noEventComponent, BEFOREEND);
+  }
+
   _renderSort() {
     render(this._tripContainer, this._sortComponent, BEFOREEND);
   }
@@ -176,6 +182,7 @@ export default class Trip {
       .forEach((presenter) => presenter.destroy());
     this._eventPresenter = {};
 
+    remove(this._noEventComponent);
     remove(this._loadingComponent);
     remove(this._sortComponent);
     remove(this._tripDaysComponent);
@@ -184,6 +191,15 @@ export default class Trip {
   _renderTrip() {
     if (this._isLoading) {
       this._renderLoading();
+
+      return;
+    }
+
+    const events = this._getEvents();
+    const eventsCount = events.length;
+
+    if (eventsCount === 0) {
+      this._renderNoEvent();
 
       return;
     }
