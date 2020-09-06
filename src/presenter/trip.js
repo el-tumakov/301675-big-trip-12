@@ -171,6 +171,8 @@ export default class Trip {
     switch (menuItem) {
       case MenuItem.TABLE:
         if (this._statsComponent) {
+          const pageBodyElement = document.querySelector(`.page-body__container--no-strip`);
+          pageBodyElement.classList.remove(`page-body__container--no-strip`);
           this.destroy();
           this.init();
           remove(this._statsComponent);
@@ -179,6 +181,7 @@ export default class Trip {
       case MenuItem.STATS:
         const pageMainElement = document.querySelector(`.page-main`);
         const pageBodyElement = pageMainElement.querySelector(`.page-body__container`);
+        pageBodyElement.classList.add(`page-body__container--no-strip`);
         this.destroy();
         this._statsComponent = new StatsView(this._eventsModel.getEvents());
         render(pageBodyElement, this._statsComponent, BEFOREEND);
