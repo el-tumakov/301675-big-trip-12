@@ -9,6 +9,11 @@ const Mode = {
   EDITING: `EDITING`
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`
+};
+
 const {BEFOREEND} = RenderPosition;
 
 export default class Event {
@@ -51,7 +56,8 @@ export default class Event {
     }
 
     if (this._mode === Mode.EDITING) {
-      replace(this._eventFormComponent, prevEventFormComponent);
+      replace(this._eventComponent, prevEventFormComponent);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevEventComponent);
@@ -67,6 +73,23 @@ export default class Event {
   destroy() {
     remove(this._eventComponent);
     remove(this._eventFormComponent);
+  }
+
+  setViewState(state) {
+    switch (state) {
+      case State.SAVING:
+        this._eventFormComponent.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._eventFormComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+    }
   }
 
   _replaceEventToForm() {
@@ -104,7 +127,6 @@ export default class Event {
         UserAction.UPDATE_EVENT,
         isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
         update);
-    this._replaceFormToEvent();
   }
 
   _handleDeleteClick(event) {
