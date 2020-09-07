@@ -127,6 +127,10 @@ export default class Trip {
         this._api.updateEvent(update)
           .then((response) => {
             this._eventsModel.updateEvent(updateType, response);
+
+            if (this._getEvents().length === 0) {
+              this._filterModel.resetFilter(UpdateType.MAJOR);
+            }
           })
           .catch(() => {
             this._eventPresenter[update.id].setViewState(EventPresenterViewState.ABORTING);
@@ -147,6 +151,10 @@ export default class Trip {
         this._api.deleteEvent(update)
           .then(() => {
             this._eventsModel.deleteEvent(updateType, update);
+
+            if (this._getEvents().length === 0) {
+              this._filterModel.resetFilter(UpdateType.MAJOR);
+            }
           })
           .catch(() => {
             this._eventPresenter[update.id].setViewState(EventPresenterViewState.ABORTING);
