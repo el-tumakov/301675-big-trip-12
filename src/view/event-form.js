@@ -507,7 +507,6 @@ export default class EventForm extends SmartView {
     if (!this._validateCity()) {
       return;
     }
-
     this._callback.formSubmit(EventForm.parseDataToEvent(this._data));
   }
 
