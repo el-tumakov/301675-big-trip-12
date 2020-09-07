@@ -50,7 +50,7 @@ export default class EventNew {
     this._changeData(
         UserAction.ADD_EVENT,
         UpdateType.MAJOR,
-        Object.assign(event)
+        event
     );
     this.destroy();
   }

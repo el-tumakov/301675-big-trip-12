@@ -1,13 +1,12 @@
 import SmartView from "./smart.js";
 import {transformPreposition} from "../utils/specific.js";
-import {toUpperCaseFirstLetter, generateId, getToday} from "../utils/common.js";
+import {toUpperCaseFirstLetter, getToday} from "../utils/common.js";
 import {TRIP_TYPES, STOP_TYPES} from "../const.js";
 import flatpickr from "flatpickr";
 import moment from "moment";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_EVENT = {
-  id: generateId(),
   type: `taxi`,
   city: ``,
   offers: [],
@@ -278,6 +277,7 @@ export default class EventForm extends SmartView {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteClickHandler(this._callback.deleteClick);
+    this.setDatepickers();
   }
 
   _setInnerHandlers() {
