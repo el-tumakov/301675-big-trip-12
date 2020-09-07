@@ -160,7 +160,7 @@ const createEventFormTemplate = (event, offers, destination) => {
 
   const timeStart = moment(time.start).format(`DD/MM/YY HH:mm`);
   const timeEnd = moment(time.end).format(`DD/MM/YY HH:mm`);
-  const isSubmitDisabled = (city === null || price === null);
+  const isSubmitDisabled = (city === ``);
 
   const form = (
     `<form class="${event ? `trip-events__item` : ``} event  event--edit" action="#" method="post">
@@ -246,6 +246,7 @@ const createEventFormTemplate = (event, offers, destination) => {
             name="event-price"
             value="${price}"
             ${isDisabled ? `disabled` : ``}
+            required
           />
         </div>
 
@@ -437,6 +438,12 @@ export default class EventForm extends SmartView {
 
     const city = evt.target.value;
     const destination = this._destination.find((item) => item.name === city);
+
+    if (!destination) {
+      evt.target.setCustomValidity(`Choose a city from the list`);
+      return;
+    }
+
     const description = destination.description;
     const photos = destination.pictures;
 
@@ -504,9 +511,6 @@ export default class EventForm extends SmartView {
   _formSubmitHandler(evt) {
     evt.preventDefault();
 
-    if (!this._validateCity()) {
-      return;
-    }
     this._callback.formSubmit(EventForm.parseDataToEvent(this._data));
   }
 
@@ -525,13 +529,6 @@ export default class EventForm extends SmartView {
     this.getElement()
       .querySelector(`.event__reset-btn`)
       .addEventListener(`click`, this._deleteClickHandler);
-  }
-
-  _validateCity() {
-    const cityInputValue = this.getElement().
-      querySelector(`.event__input--destination`).value;
-
-    return this._destination.indexOf((item) => item.name === cityInputValue) ? true : false;
   }
 
   static parseEventToData(event) {
