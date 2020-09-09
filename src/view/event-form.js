@@ -107,6 +107,17 @@ const addOfferTemplate = (event, offersData) => {
   return offersTemplate.join(``);
 };
 
+const createOffersSectionTemplate = (event, offers) => {
+  return (
+    `<section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${addOfferTemplate(event, offers)}
+      </div>
+    </section>`
+  );
+};
+
 const createPhotosTemplate = (photos) => {
   return (
     photos.reduce((prev, current) => {
@@ -145,6 +156,8 @@ const createEventFormTemplate = (event, offers, destination) => {
     isDeleting
   } = event;
 
+  const offer = offers.find((item) => item.type === type);
+  const currentOffers = offer.offers;
   const cities = [];
   let photos;
   let description;
@@ -280,14 +293,7 @@ const createEventFormTemplate = (event, offers, destination) => {
       </header>
 
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-            ${addOfferTemplate(event, offers)}
-          </div>
-        </section>
-
+        ${currentOffers.length !== 0 ? createOffersSectionTemplate(event, offers) : ``}
         ${city !== `` ? createDesinationTemplate(description, photos) : ``}
       </section>
     </form>`
@@ -355,9 +361,13 @@ export default class EventForm extends SmartView {
     this.getElement()
       .querySelector(`.event__favorite-btn`)
       .addEventListener(`click`, this._favoriteClickHandler);
-    this.getElement()
-      .querySelector(`.event__section--offers`)
-      .addEventListener(`change`, this._offersChangeHandler);
+
+    const offersSectionElement = this.getElement()
+      .querySelector(`.event__section--offers`);
+
+    if (offersSectionElement) {
+      offersSectionElement.addEventListener(`change`, this._offersChangeHandler);
+    }
   }
 
   setDatepickers() {
