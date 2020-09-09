@@ -6,7 +6,7 @@ import DayView from "../view/day.js";
 import LoadingView from "../view/loading.js";
 import NoEventView from "../view/no-event.js";
 import TripInfoPresenter from "./trip-info.js";
-import EventPointPresenter from "./event-point.js";
+import EventPresenter, {State as EventPresenterViewState} from "./event-point.js";
 import EventNewPresenter from "./event-new.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {getUniqueDates} from "../utils/specific.js";
@@ -123,15 +123,34 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this._api.updateEvent(update).then((response) => {
-          this._eventsModel.updateEvent(updateType, response);
-        });
+        this._eventPresenter[update.id].setViewState(EventPresenterViewState.SAVING);
+        this._api.updateEvent(update)
+          .then((response) => {
+            this._eventsModel.updateEvent(updateType, response);
+          })
+          .catch(() => {
+            this._eventPresenter[update.id].setViewState(EventPresenterViewState.ABORTING);
+          });
         break;
       case UserAction.ADD_EVENT:
-        this._eventsModel.addEvent(updateType, update);
+        this._eventNewPresenter.setSaving();
+        this._api.addEvent(update)
+          .then((response) => {
+            this._eventsModel.addEvent(updateType, response);
+          })
+          .catch(() => {
+            this._eventNewPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_EVENT:
-        this._eventsModel.deleteEvent(updateType, update);
+        this._eventPresenter[update.id].setViewState(EventPresenterViewState.DELETING);
+        this._api.deleteEvent(update)
+          .then(() => {
+            this._eventsModel.deleteEvent(updateType, update);
+          })
+          .catch(() => {
+            this._eventPresenter[update.id].setViewState(EventPresenterViewState.ABORTING);
+          });
         break;
     }
   }
@@ -252,7 +271,7 @@ export default class Trip {
   }
 
   _renderEvent(eventsListContainer, event) {
-    const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleViewAction, this._handleModeChange);
+    const eventPresenter = new EventPresenter(eventsListContainer, this._handleViewAction, this._handleModeChange);
     eventPresenter.init(this._getDestination(), event, this._getOffers());
 
     this._eventPresenter[event.id] = eventPresenter;

@@ -1,13 +1,12 @@
 import SmartView from "./smart.js";
 import {transformPreposition} from "../utils/specific.js";
-import {toUpperCaseFirstLetter, generateId, getToday} from "../utils/common.js";
+import {toUpperCaseFirstLetter, getToday} from "../utils/common.js";
 import {TRIP_TYPES, STOP_TYPES} from "../const.js";
 import flatpickr from "flatpickr";
 import moment from "moment";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const BLANK_EVENT = {
-  id: generateId(),
   type: `taxi`,
   city: ``,
   offers: [],
@@ -19,12 +18,6 @@ const BLANK_EVENT = {
   },
   price: ``,
   isFavorite: false,
-};
-
-const getOfferLabel = (offer) => {
-  let split = offer.title.split(` `);
-
-  return split[split.length - 1];
 };
 
 const setFavorite = (isFavorite) => {
@@ -45,12 +38,20 @@ const createCityListTemplate = (cities) => {
   );
 };
 
-const createRadioTemplate = (event, types) => {
+const createRadioTemplate = (event, types, isDisabled) => {
   return (
     types.reduce((prev, current) => {
       return prev + (
         `<div class="event__type-item">
-          <input id="event-type-${current}-${event.id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${current}" ${event.type === current ? `checked` : ``}>
+          <input
+            id="event-type-${current}-${event.id}"
+            class="event__type-input visually-hidden"
+            type="radio"
+            name="event-type"
+            value="${current}"
+            ${event.type === current ? `checked` : ``}
+            ${isDisabled ? `disabled` : ``}
+          />
           <label class="event__type-label  event__type-label--${current}" for="event-type-${current}-${event.id}">${toUpperCaseFirstLetter(current)}</label>
         </div>`
       );
@@ -58,11 +59,19 @@ const createRadioTemplate = (event, types) => {
   );
 };
 
-const createOfferTemplate = (offer, check, id) => {
+const createOfferTemplate = (offer, check, id, isDisabled) => {
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox visually-hidden" id="event-offer-${getOfferLabel(offer)}-${id}" type="checkbox" name="event-offer-${getOfferLabel(offer)}" ${check} data-title="${offer.title}">
-      <label class="event__offer-label" for="event-offer-${getOfferLabel(offer)}-${id}">
+      <input
+        class="event__offer-checkbox visually-hidden"
+        id="event-offer-${offer.title}-${id}"
+        type="checkbox"
+        name="event-offer-${offer.title}"
+        ${check}
+        data-title="${offer.title}"
+        ${isDisabled ? `disabled` : ``}
+      />
+      <label class="event__offer-label" for="event-offer-${offer.title}-${id}">
       <span class="event__offer-title">${offer.title}</span>
       &plus;
       &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
@@ -130,7 +139,10 @@ const createEventFormTemplate = (event, offers, destination) => {
     city,
     time,
     price,
-    isFavorite
+    isFavorite,
+    isDisabled,
+    isSaving,
+    isDeleting
   } = event;
 
   const cities = [];
@@ -148,6 +160,7 @@ const createEventFormTemplate = (event, offers, destination) => {
 
   const timeStart = moment(time.start).format(`DD/MM/YY HH:mm`);
   const timeEnd = moment(time.end).format(`DD/MM/YY HH:mm`);
+  const isSubmitDisabled = (city === ``);
 
   const form = (
     `<form class="${event ? `trip-events__item` : ``} event  event--edit" action="#" method="post">
@@ -157,17 +170,22 @@ const createEventFormTemplate = (event, offers, destination) => {
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
+          <input
+            class="event__type-toggle  visually-hidden"
+            id="event-type-toggle-${id}"
+            type="checkbox"
+            ${isDisabled ? `disabled` : ``}
+          />
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
-              ${createRadioTemplate(event, TRIP_TYPES)}
+              ${createRadioTemplate(event, TRIP_TYPES, isDisabled)}
             </fieldset>
 
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Activity</legend>
-              ${createRadioTemplate(event, STOP_TYPES)}
+              ${createRadioTemplate(event, STOP_TYPES, isDisabled)}
             </fieldset>
           </div>
         </div>
@@ -176,7 +194,15 @@ const createEventFormTemplate = (event, offers, destination) => {
           <label class="event__label  event__type-output" for="event-destination-${id}">
           ${toUpperCaseFirstLetter(type)} ${transformPreposition(type)}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${city}" list="destination-list-${id}">
+          <input
+            class="event__input  event__input--destination"
+            id="event-destination-${id}"
+            type="text"
+            name="event-destination"
+            value="${city}"
+            list="destination-list-${id}"
+            ${isDisabled ? `disabled` : ``}
+          />
           <datalist id="destination-list-${id}">
             ${createCityListTemplate(cities)}
           </datalist>
@@ -186,12 +212,26 @@ const createEventFormTemplate = (event, offers, destination) => {
           <label class="visually-hidden" for="event-start-time-${id}">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${timeStart}">
+          <input
+            class="event__input  event__input--time"
+            id="event-start-time-${id}"
+            type="text"
+            name="event-start-time"
+            value="${timeStart}"
+            ${isDisabled ? `disabled` : ``}
+          />
           &mdash;
           <label class="visually-hidden" for="event-end-time-${id}">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${timeEnd}">
+          <input
+            class="event__input  event__input--time"
+            id="event-end-time-${id}"
+            type="text"
+            name="event-end-time"
+            value="${timeEnd}"
+            ${isDisabled ? `disabled` : ``}
+          />
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -199,13 +239,34 @@ const createEventFormTemplate = (event, offers, destination) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${price}">
+          <input
+            class="event__input  event__input--price"
+            id="event-price-${id}"
+            type="number"
+            name="event-price"
+            value="${price}"
+            ${isDisabled ? `disabled` : ``}
+            required
+          />
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button
+          class="event__save-btn  btn  btn--blue"
+          type="submit"
+          ${isSubmitDisabled || isDisabled ? `disabled` : ``}
+        >${isSaving ? `saving...` : `save`}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>
+          ${isDeleting ? `deleting...` : `delete`}
+        </button>
 
-        <input id="event-favorite-${id}" class="event__favorite-checkbox visually-hidden" type="checkbox" name="event-favorite" ${setFavorite(isFavorite)}>
+        <input
+          id="event-favorite-${id}"
+          class="event__favorite-checkbox visually-hidden"
+          type="checkbox"
+          name="event-favorite"
+          ${setFavorite(isFavorite)}
+          ${isDisabled ? `disabled` : ``}
+        />
         <label class="event__favorite-btn" for="event-favorite-${id}">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -248,7 +309,7 @@ export default class EventForm extends SmartView {
     super();
     this._destination = destination;
     this._offers = offers;
-    this._event = event;
+    this._data = EventForm.parseEventToData(event);
 
     this._datepickerStart = null;
     this._datepickerEnd = null;
@@ -267,17 +328,18 @@ export default class EventForm extends SmartView {
   }
 
   reset(event) {
-    this.updateData(event);
+    this.updateData(EventForm.parseEventToData(event));
   }
 
   getTemplate() {
-    return createEventFormTemplate(this._event, this._offers, this._destination);
+    return createEventFormTemplate(this._data, this._offers, this._destination);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteClickHandler(this._callback.deleteClick);
+    this.setDatepickers();
   }
 
   _setInnerHandlers() {
@@ -341,20 +403,20 @@ export default class EventForm extends SmartView {
     evt.preventDefault();
 
     let offers = [];
-    const offersOfType = this._offers.find((item) => item.type === this._event.type).offers;
+    const offersOfType = this._offers.find((item) => item.type === this._data.type).offers;
     const offer = offersOfType.find((item) => item.title === evt.target.dataset.title);
 
     if (evt.target.checked) {
       offers = [
-        ...this._event.offers,
+        ...this._data.offers,
         offer
       ];
     } else {
-      const index = this._event.offers.findIndex((item) => item.title === offer.title);
+      const index = this._data.offers.findIndex((item) => item.title === offer.title);
 
       offers = [
-        ...this._event.offers.slice(0, index),
-        ...this._event.offers.slice(index + 1)
+        ...this._data.offers.slice(0, index),
+        ...this._data.offers.slice(index + 1)
       ];
     }
 
@@ -376,6 +438,12 @@ export default class EventForm extends SmartView {
 
     const city = evt.target.value;
     const destination = this._destination.find((item) => item.name === city);
+
+    if (!destination) {
+      evt.target.setCustomValidity(`Choose a city from the list`);
+      return;
+    }
+
     const description = destination.description;
     const photos = destination.pictures;
 
@@ -388,7 +456,7 @@ export default class EventForm extends SmartView {
 
   _timeStartChangeHandler([userDate]) {
     const date = userDate.toISOString();
-    let end = this._event.time.end;
+    let end = this._data.time.end;
 
     if (userDate > moment(end)) {
       const timeEndElement = this.getElement()
@@ -408,7 +476,7 @@ export default class EventForm extends SmartView {
 
   _timeEndChangeHandler([userDate]) {
     const date = userDate.toISOString();
-    let start = this._event.time.start;
+    let start = this._data.time.start;
 
     if (userDate < moment(start)) {
       const timeStartElement = this.getElement()
@@ -436,18 +504,14 @@ export default class EventForm extends SmartView {
   _favoriteClickHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      isFavorite: !this._event.isFavorite
+      isFavorite: !this._data.isFavorite
     });
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
 
-    if (!this._validateCity()) {
-      return;
-    }
-
-    this._callback.formSubmit(this._event);
+    this._callback.formSubmit(EventForm.parseDataToEvent(this._data));
   }
 
   setFormSubmitHandler(callback) {
@@ -457,7 +521,7 @@ export default class EventForm extends SmartView {
 
   _deleteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.deleteClick(this._event);
+    this._callback.deleteClick(EventForm.parseDataToEvent(this._data));
   }
 
   setDeleteClickHandler(callback) {
@@ -467,10 +531,25 @@ export default class EventForm extends SmartView {
       .addEventListener(`click`, this._deleteClickHandler);
   }
 
-  _validateCity() {
-    const cityInputValue = this.getElement().
-      querySelector(`.event__input--destination`).value;
+  static parseEventToData(event) {
+    return Object.assign(
+        {},
+        event,
+        {
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false
+        }
+    );
+  }
 
-    return this._destination.indexOf((item) => item.name === cityInputValue) ? true : false;
+  static parseDataToEvent(data) {
+    data = Object.assign({}, data);
+
+    delete data.isDisabled;
+    delete data.isSaving;
+    delete data.isDeleting;
+
+    return data;
   }
 }

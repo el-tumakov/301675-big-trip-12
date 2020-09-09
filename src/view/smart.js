@@ -3,7 +3,7 @@ import Abstract from "./abstract.js";
 export default class Smart extends Abstract {
   constructor() {
     super();
-    this._event = {};
+    this._data = {};
   }
 
   updateData(update, justDataUpdating) {
@@ -11,9 +11,9 @@ export default class Smart extends Abstract {
       return;
     }
 
-    this._event = Object.assign(
+    this._data = Object.assign(
         {},
-        this._event,
+        this._data,
         update
     );
 
@@ -27,7 +27,7 @@ export default class Smart extends Abstract {
   updateElement() {
     const prevElement = this.getElement();
     const parent = prevElement.parentElement;
-
+    this.removeDatepickers();
     this.removeElement();
 
     const newElement = this.getElement();
