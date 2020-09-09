@@ -1,3 +1,4 @@
+import TitleH2View from "../view/title-h2.js";
 import FilterView from "../view/filter.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
 import {FilterType, UpdateType} from "../const.js";
@@ -26,8 +27,10 @@ export default class Filter {
 
     this._filterComponent = new FilterView(filters, this._currentFilter);
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
+    this._filterTitleComponent = new TitleH2View(this._filterComponent.getTitle());
 
     if (prevFilterComponent === null) {
+      render(this._filterContainer, this._filterTitleComponent, RenderPosition.BEFOREEND);
       render(this._filterContainer, this._filterComponent, RenderPosition.BEFOREEND);
       return;
     }

@@ -1,3 +1,5 @@
+import NewEventBtnView from "../view/new-event-btn.js";
+import StatsView from "../view/stats.js";
 import SortView from "../view/sort.js";
 import TripDaysView from "../view/trip-days.js";
 import DayView from "../view/day.js";
@@ -10,50 +12,88 @@ import {render, RenderPosition, remove} from "../utils/render.js";
 import {getUniqueDates} from "../utils/specific.js";
 import {sortEventTime, sortEventPrice} from "../utils/event.js";
 import {filter} from "../utils/filter.js";
-import {SortType, UserAction, UpdateType} from "../const.js";
+import {SortType, UserAction, UpdateType, MenuItem, FilterType} from "../const.js";
 import moment from "moment";
 
 const {BEFOREEND} = RenderPosition;
 
 export default class Trip {
-  constructor(tripContainer, offersModel, eventsModel, filterModel, api) {
+  constructor(
+      tripContainer,
+      offersModel,
+      eventsModel,
+      filterModel,
+      siteMenuModel,
+      destinationModel,
+      api
+  ) {
     this._tripContainer = tripContainer;
     this._offersModel = offersModel;
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
+    this._siteMenuModel = siteMenuModel;
+    this._destinationModel = destinationModel;
     this._eventPresenter = {};
     this._tripInfoPresenter = {};
     this._isLoading = true;
     this._api = api;
 
     this._sortComponent = null;
+    this._statsComponent = null;
 
     this._sortComponent = new SortView();
     this._tripDaysComponent = new TripDaysView();
     this._loadingComponent = new LoadingView();
     this._noEventComponent = new NoEventView();
+    this._newEventBtnComponent = new NewEventBtnView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
-
-    this._eventsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    this._handleMenuModel = this._handleMenuModel.bind(this);
 
     this._eventNewPresenter = new EventNewPresenter(this._tripContainer, this._handleViewAction);
+
+    this._siteMenuModel.addObserver(this._handleMenuModel);
   }
 
   init() {
+    this._eventsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
     this._renderTrip();
   }
 
+  destroy() {
+    this._clearTrip({resetSortType: true});
+
+    this._eventsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+
+    remove(this._tripDaysComponent);
+  }
+
   createEvent() {
-    this._eventNewPresenter.init(this._getUniqCities(), this._getOffers());
+    this._clearTrip({resetSortType: true});
+
+    if (this._getEvents().length !== 0) {
+      this._renderSort();
+    }
+
+    this._eventNewPresenter.init(this._getDestination(), this._getOffers());
+
+    this._renderTripDays();
+    this._renderDays();
+    this._renderEvents();
   }
 
   _getOffers() {
     return this._offersModel.getOffers();
+  }
+
+  _getDestination() {
+    return this._destinationModel.getDestination();
   }
 
   _getEvents() {
@@ -71,18 +111,6 @@ export default class Trip {
     }
 
     return filtredEvents;
-  }
-
-  _getUniqCities() {
-    const cities = [];
-
-    this._eventsModel.getEvents().forEach((item) => {
-      if (!cities.includes(item.city)) {
-        cities.push(item.city);
-      }
-    });
-
-    return cities;
   }
 
   _handleModeChange() {
@@ -113,22 +141,56 @@ export default class Trip {
       case UpdateType.PATCH:
         this._tripInfoPresenter.destroy();
         this._renderTripInfo();
-        this._eventPresenter[data.id].init(this._getUniqCities(), data, this._getOffers());
+        this._eventPresenter[data.id].init(this._getDestination(), data, this._getOffers());
         break;
       case UpdateType.MINOR:
+        this._tripInfoPresenter.destroy();
+        this._renderTripInfo();
         this._clearTrip();
         this._renderTrip();
         break;
       case UpdateType.MAJOR:
+        this._tripInfoPresenter.destroy();
+        this._renderTripInfo();
         this._clearTrip({resetSortType: true});
         this._renderTrip();
         break;
       case UpdateType.INIT:
         this._isLoading = false;
+        this._newEventBtnComponent.getElement().disabled = false;
+        this._tripInfoPresenter.destroy();
         remove(this._loadingComponent);
         this._currentSortType = SortType.DEFAULT;
+        this._renderTripInfo();
         this._renderTrip();
         break;
+    }
+  }
+
+  _handleMenuModel(menuItem) {
+    switch (menuItem) {
+      case MenuItem.TABLE:
+        if (this._statsComponent) {
+          const pageBodyElement = document.querySelector(`.page-body__container--no-strip`);
+          pageBodyElement.classList.remove(`page-body__container--no-strip`);
+          this.destroy();
+          this.init();
+          remove(this._statsComponent);
+        }
+        break;
+      case MenuItem.STATS:
+        const pageMainElement = document.querySelector(`.page-main`);
+        const pageBodyElement = pageMainElement.querySelector(`.page-body__container`);
+        pageBodyElement.classList.add(`page-body__container--no-strip`);
+        this.destroy();
+        this._statsComponent = new StatsView(this._eventsModel.getEvents());
+        render(pageBodyElement, this._statsComponent, BEFOREEND);
+        this._statsComponent.init();
+        break;
+      case MenuItem.NEW_EVENT:
+        this._siteMenuModel.setMenuItem(MenuItem.TABLE);
+        this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+        this.createEvent();
     }
   }
 
@@ -191,7 +253,7 @@ export default class Trip {
 
   _renderEvent(eventsListContainer, event) {
     const eventPresenter = new EventPointPresenter(eventsListContainer, this._handleViewAction, this._handleModeChange);
-    eventPresenter.init(this._getUniqCities(), event, this._getOffers());
+    eventPresenter.init(this._getDestination(), event, this._getOffers());
 
     this._eventPresenter[event.id] = eventPresenter;
   }
@@ -221,7 +283,6 @@ export default class Trip {
       .forEach((presenter) => presenter.destroy());
     this._eventPresenter = {};
 
-    this._tripInfoPresenter.destroy();
     remove(this._noEventComponent);
     remove(this._loadingComponent);
     remove(this._sortComponent);
@@ -234,7 +295,9 @@ export default class Trip {
 
   _renderTrip() {
     if (this._isLoading) {
+      this._renderTripInfo();
       this._renderLoading();
+      this._newEventBtnComponent.getElement().disabled = true;
 
       return;
     }
@@ -248,7 +311,6 @@ export default class Trip {
       return;
     }
 
-    this._renderTripInfo();
     this._renderSort();
     this._renderTripDays();
     this._renderDays();

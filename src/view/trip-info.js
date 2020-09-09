@@ -8,9 +8,11 @@ const createTripInfoTemplate = (events) => {
   let dayEnd = ``;
   let checkMonth = () => ``;
 
-  if (events.length) {
-    const startDate = new Date(events[0].time.start);
-    const endDate = new Date(events[events.length - 1].time.end);
+  const sortEvents = events.sort((prev, next) => new Date(prev.time.start) - new Date(next.time.start));
+
+  if (sortEvents.length) {
+    const startDate = new Date(sortEvents[0].time.start);
+    const endDate = new Date(sortEvents[sortEvents.length - 1].time.end);
     monthStart = moment(startDate).format(`MMM`);
     monthEnd = moment(endDate).format(`MMM`);
 
@@ -29,7 +31,7 @@ const createTripInfoTemplate = (events) => {
   const getCities = () => {
     let cities = [];
 
-    events.forEach((item) => {
+    sortEvents.forEach((item) => {
       cities.push(item.city);
     });
 

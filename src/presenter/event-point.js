@@ -27,14 +27,14 @@ export default class Event {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init(cities, event, offers) {
+  init(destination, event, offers) {
     this._event = event;
 
     const prevEventComponent = this._eventComponent;
     const prevEventFormComponent = this._eventFormComponent;
 
     this._eventComponent = new EventPointView(event);
-    this._eventFormComponent = new EventFormView(cities, offers, event);
+    this._eventFormComponent = new EventFormView(destination, offers, event);
 
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
@@ -74,12 +74,14 @@ export default class Event {
     document.addEventListener(`keydown`, this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
+    this._eventFormComponent.setDatepickers();
   }
 
   _replaceFormToEvent() {
     replace(this._eventComponent, this._eventFormComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
+    this._eventFormComponent.removeDatepickers();
   }
 
   _escKeyDownHandler(evt) {
@@ -106,6 +108,8 @@ export default class Event {
   }
 
   _handleDeleteClick(event) {
+    this._eventFormComponent.removeDatepickers();
+
     this._changeData(
         UserAction.DELETE_EVENT,
         UpdateType.MAJOR,
