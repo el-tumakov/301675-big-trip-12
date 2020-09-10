@@ -231,10 +231,6 @@ export default class Trip {
     this._renderTrip();
   }
 
-  _handleEventChange(updatedEvent) {
-    this._eventPresenter[updatedEvent.id].init(updatedEvent);
-  }
-
   _renderTripInfo() {
     const tripMainElement = document.querySelector(`.trip-main`);
     const tripInfoPresenter = new TripInfoPresenter(tripMainElement);
