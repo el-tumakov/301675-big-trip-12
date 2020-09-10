@@ -2,7 +2,7 @@ import SiteMenuView from "../view/site-menu.js";
 import TitleH2View from "../view/title-h2.js";
 import FilterView from "../view/filter.js";
 import {render, RenderPosition} from "../utils/render.js";
-// import {MenuItem} from "../const.js";
+import {MenuItem} from "../const.js";
 
 const {BEFOREEND} = RenderPosition;
 
@@ -14,7 +14,10 @@ export default class SiteMenu {
     this._siteMenuComponent = new SiteMenuView();
     this._filterComponent = new FilterView();
 
+    this._handleSiteMenuModel = this._handleSiteMenuModel.bind(this);
     this._handleSiteMenuChange = this._handleSiteMenuChange.bind(this);
+
+    this._siteMenuModel.addObserver(this._handleSiteMenuModel);
   }
 
   init() {
@@ -30,39 +33,25 @@ export default class SiteMenu {
     render(this._siteMenuContainer, this._siteMenuComponent, BEFOREEND);
   }
 
+  _handleSiteMenuModel() {
+    if (this._siteMenuModel.getMenuItem() === MenuItem.NEW_EVENT) {
+      this._siteMenuModel.setMenuItem(MenuItem.TABLE);
+      this._siteMenuComponent.resetMenu();
+    }
+  }
+
   _handleSiteMenuChange(menuItem) {
+    if (!menuItem) {
+      return;
+    }
+
     this._currentMenuItem = this._siteMenuModel.getMenuItem();
 
     if (this._currentMenuItem === menuItem) {
       return;
     }
 
-    this._siteMenuComponent.getElement()
-      .querySelector(`[data-type="${this._currentMenuItem}"]`)
-      .classList.remove(`trip-tabs__btn--active`);
-
-    this._siteMenuComponent.getElement()
-      .querySelector(`[data-type="${menuItem}"]`)
-      .classList.add(`trip-tabs__btn--active`);
-
     this._siteMenuModel.setMenuItem(menuItem);
+    this._siteMenuComponent.setMenuItemActive(this._currentMenuItem, menuItem);
   }
-
-  // _handleNewEventBtnClick() {
-  //   this._currentMenuItem = this._siteMenuModel.getMenuItem();
-
-  //   if (this._currentMenuItem === MenuItem.STATS) {
-  //     this._siteMenuComponent.getElement()
-  //     .querySelector(`[data-type="${MenuItem.STATS}"]`)
-  //     .classList.remove(`trip-tabs__btn--active`);
-
-  //     this._siteMenuComponent.getElement()
-  //       .querySelector(`[data-type="${MenuItem.TABLE}"]`)
-  //       .classList.add(`trip-tabs__btn--active`);
-  //   }
-
-  //   this._newEventBtnComponent.setDisabled();
-
-  //   this._siteMenuModel.setMenuItem(MenuItem.NEW_EVENT);
-  // }
 }

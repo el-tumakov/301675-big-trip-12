@@ -326,7 +326,6 @@ export default class Trip {
         this._statsComponent.init();
         break;
       case MenuItem.NEW_EVENT:
-        this._siteMenuModel.setMenuItem(MenuItem.TABLE);
         this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
         this.createEvent();
     }
