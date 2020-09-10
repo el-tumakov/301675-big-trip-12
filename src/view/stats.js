@@ -292,9 +292,9 @@ export default class Stats extends SmartView {
     const transportCtx = document.querySelector(`.statistics__chart--transport`);
     const timeSpendCtx = document.querySelector(`.statistics__chart--time`);
 
-    moneyCtx.height = BAR_HEIGHT * 10;
-    transportCtx.height = BAR_HEIGHT * 7;
-    timeSpendCtx.height = BAR_HEIGHT * 10;
+    moneyCtx.height = BAR_HEIGHT * TYPES.length;
+    transportCtx.height = BAR_HEIGHT * TRIP_TYPES.length;
+    timeSpendCtx.height = BAR_HEIGHT * TYPES.length;
 
     this._moneyChart = renderMoneyChart(moneyCtx, this._events);
     this._transportChart = renderTransportChart(transportCtx, this._events);
