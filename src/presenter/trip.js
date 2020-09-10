@@ -1,4 +1,3 @@
-import NewEventBtnView from "../view/new-event-btn.js";
 import StatsView from "../view/stats.js";
 import SortView from "../view/sort.js";
 import TripDaysView from "../view/trip-days.js";
@@ -12,7 +11,7 @@ import {render, RenderPosition, remove} from "../utils/render.js";
 import {getUniqueDates} from "../utils/specific.js";
 import {sortEventTime, sortEventPrice} from "../utils/event.js";
 import {filter} from "../utils/filter.js";
-import {SortType, UserAction, UpdateType, MenuItem, FilterType} from "../const.js";
+import {SortType, UserAction, UpdateType, MenuItem, FilterType, ButtonState} from "../const.js";
 import moment from "moment";
 
 const {BEFOREEND} = RenderPosition;
@@ -25,6 +24,7 @@ export default class Trip {
       filterModel,
       siteMenuModel,
       destinationModel,
+      newEventBtnModel,
       api
   ) {
     this._tripContainer = tripContainer;
@@ -32,6 +32,7 @@ export default class Trip {
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
     this._siteMenuModel = siteMenuModel;
+    this._newEventBtnModel = newEventBtnModel;
     this._destinationModel = destinationModel;
     this._eventPresenter = {};
     this._tripInfoPresenter = {};
@@ -45,7 +46,6 @@ export default class Trip {
     this._tripDaysComponent = new TripDaysView();
     this._loadingComponent = new LoadingView();
     this._noEventComponent = new NoEventView();
-    this._newEventBtnComponent = new NewEventBtnView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -53,7 +53,7 @@ export default class Trip {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleMenuModel = this._handleMenuModel.bind(this);
 
-    this._eventNewPresenter = new EventNewPresenter(this._tripContainer, this._handleViewAction);
+    this._eventNewPresenter = new EventNewPresenter(this._tripContainer, this._handleViewAction, this._newEventBtnModel);
 
     this._siteMenuModel.addObserver(this._handleMenuModel);
   }
@@ -86,6 +86,8 @@ export default class Trip {
     this._renderTripDays();
     this._renderDays();
     this._renderEvents();
+
+    this._newEventBtnModel.setButtonState(ButtonState.DISABLED);
   }
 
   _getOffers() {
@@ -202,7 +204,6 @@ export default class Trip {
     if (this._isLoading) {
       this._renderTripInfo();
       this._renderLoading();
-      this._newEventBtnComponent.getElement().disabled = true;
 
       return;
     }
@@ -220,6 +221,8 @@ export default class Trip {
     this._renderTripDays();
     this._renderDays();
     this._renderEvents();
+
+    this._newEventBtnModel.setButtonState(ButtonState.ENABLED);
   }
 
   _handleModeChange() {
@@ -293,7 +296,6 @@ export default class Trip {
         break;
       case UpdateType.INIT:
         this._isLoading = false;
-        this._newEventBtnComponent.getElement().disabled = false;
         this._tripInfoPresenter.destroy();
         remove(this._loadingComponent);
         this._currentSortType = SortType.DEFAULT;

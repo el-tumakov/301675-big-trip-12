@@ -44,3 +44,8 @@ export const MenuItem = {
   STATS: `STATS`,
   NEW_EVENT: `NEW_EVENT`
 };
+
+export const ButtonState = {
+  ENABLED: `ENABLED`,
+  DISABLED: `DISABLED`
+};

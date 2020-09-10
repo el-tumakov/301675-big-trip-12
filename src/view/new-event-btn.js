@@ -17,6 +17,14 @@ export default class NewEventBtn extends AbstractView {
     return createNewEventBtnTemplate();
   }
 
+  setDisabled() {
+    this.getElement().disabled = true;
+  }
+
+  removeDisabled() {
+    this.getElement().disabled = false;
+  }
+
   _clickHandler(evt) {
     evt.preventDefault();
 

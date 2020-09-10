@@ -1,6 +1,8 @@
+import NewEventBtnPresenter from "./presenter/new-event-btn.js";
 import SiteMenuPresenter from "./presenter/site-menu.js";
 import FilterPresenter from "./presenter/filter.js";
 import TripPresenter from "./presenter/trip.js";
+import NewEventBtnModel from "./model/new-event-btn.js";
 import EventsModel from "./model/events.js";
 import FilterModel from "./model/filter.js";
 import OffersModel from "./model/offers.js";
@@ -27,7 +29,8 @@ const STORE_OFFERS = `${STORE_PREFIX}-${StoreType.OFFERS}-${STORE_VER}`;
 const STORE_DESTINATION = `${STORE_PREFIX}-${StoreType.DESTINATION}-${STORE_VER}`;
 
 const siteHeaderElement = document.querySelector(`.page-header`);
-const tripControlsElement = siteHeaderElement.querySelector(`.trip-controls`);
+const tripMainElement = siteHeaderElement.querySelector(`.trip-main`);
+const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 
 const pageMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = pageMainElement.querySelector(`.trip-events`);
@@ -42,12 +45,14 @@ const apiEventsWithProvider = new Provider(api, storeEvents);
 const apiOffersWithProvider = new Provider(api, storeOffers);
 const apiDestinationWithProvider = new Provider(api, storeDestination);
 
+const newEventBtnModel = new NewEventBtnModel();
 const eventsModel = new EventsModel();
 const filterModel = new FilterModel();
 const offersModel = new OffersModel();
 const destinationModel = new DestinationModel();
 const siteMenuModel = new SiteMenuModel();
 
+const newEventBtnPresenter = new NewEventBtnPresenter(tripMainElement, newEventBtnModel, siteMenuModel);
 const siteMenuPresenter = new SiteMenuPresenter(tripControlsElement, siteMenuModel);
 const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
 const tripPresenter = new TripPresenter(
@@ -57,9 +62,11 @@ const tripPresenter = new TripPresenter(
     filterModel,
     siteMenuModel,
     destinationModel,
+    newEventBtnModel,
     apiEventsWithProvider
 );
 
+newEventBtnPresenter.init();
 siteMenuPresenter.init();
 filterPresenter.init();
 tripPresenter.init();
