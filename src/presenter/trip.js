@@ -163,12 +163,12 @@ export default class Trip {
     }
   }
 
-  _handleModelEvent(updateType, data) {
+  _handleModelEvent(updateType, event) {
     switch (updateType) {
       case UpdateType.PATCH:
         this._tripInfoPresenter.destroy();
         this._renderTripInfo();
-        this._eventPresenter[data.id].init(this._getDestination(), data, this._getOffers());
+        this._eventPresenter[event.id].init(this._getDestination(), event, this._getOffers());
         break;
       case UpdateType.MINOR:
         this._tripInfoPresenter.destroy();
