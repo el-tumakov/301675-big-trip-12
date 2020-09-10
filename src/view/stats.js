@@ -269,9 +269,10 @@ const createStatsTemplate = () => {
 };
 
 export default class Stats extends SmartView {
-  constructor(events) {
+  constructor(statsContainer, events) {
     super();
 
+    this._statsContainer = statsContainer;
     this._events = events;
 
     this._moneyChart = null;
@@ -280,11 +281,25 @@ export default class Stats extends SmartView {
   }
 
   init() {
+    this._removeStripe();
     this._setCharts();
   }
 
   getTemplate() {
     return createStatsTemplate(this._events);
+  }
+
+  destroy() {
+    this.getElement().remove();
+    this._addStripe();
+  }
+
+  _addStripe() {
+    this._statsContainer.classList.remove(`page-body__container--no-strip`);
+  }
+
+  _removeStripe() {
+    this._statsContainer.classList.add(`page-body__container--no-strip`);
   }
 
   _setCharts() {

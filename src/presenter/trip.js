@@ -183,6 +183,17 @@ export default class Trip {
     });
   }
 
+  _renderStats() {
+    const pageMainElement = document.querySelector(`.page-main`);
+    const pageBodyElement = pageMainElement.querySelector(`.page-body__container`);
+
+    this._statsComponent = new StatsView(pageBodyElement, this._eventsModel.getEvents());
+
+    render(pageBodyElement, this._statsComponent, BEFOREEND);
+
+    this._statsComponent.init();
+  }
+
   _clearTrip({resetSortType = false} = {}) {
     this._eventNewPresenter.destroy();
     Object
@@ -309,21 +320,14 @@ export default class Trip {
     switch (menuItem) {
       case MenuItem.TABLE:
         if (this._statsComponent) {
-          const pageBodyElement = document.querySelector(`.page-body__container--no-strip`);
-          pageBodyElement.classList.remove(`page-body__container--no-strip`);
+          this._statsComponent.destroy();
           this.destroy();
           this.init();
-          remove(this._statsComponent);
         }
         break;
       case MenuItem.STATS:
-        const pageMainElement = document.querySelector(`.page-main`);
-        const pageBodyElement = pageMainElement.querySelector(`.page-body__container`);
-        pageBodyElement.classList.add(`page-body__container--no-strip`);
         this.destroy();
-        this._statsComponent = new StatsView(this._eventsModel.getEvents());
-        render(pageBodyElement, this._statsComponent, BEFOREEND);
-        this._statsComponent.init();
+        this._renderStats();
         break;
       case MenuItem.NEW_EVENT:
         this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
