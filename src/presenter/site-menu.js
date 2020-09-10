@@ -28,6 +28,19 @@ export default class SiteMenu {
     this._newEventBtnComponent.setClickHandler(this._handleNewEventBtnClick);
   }
 
+  _renderSiteMenu() {
+    this._menuTitleComponent = new TitleH2View(this._siteMenuComponent.getTitle());
+
+    render(this._siteMenuContainer, this._menuTitleComponent, BEFOREEND);
+    render(this._siteMenuContainer, this._siteMenuComponent, BEFOREEND);
+  }
+
+  _renderNewEventBtn() {
+    const tripMainElement = document.querySelector(`.trip-main`);
+
+    render(tripMainElement, this._newEventBtnComponent, BEFOREEND);
+  }
+
   _handleSiteMenuChange(menuItem) {
     this._currentMenuItem = this._siteMenuModel.getMenuItem();
 
@@ -63,18 +76,5 @@ export default class SiteMenu {
     this._newEventBtnComponent.getElement().disabled = true;
 
     this._siteMenuModel.setMenuItem(MenuItem.NEW_EVENT);
-  }
-
-  _renderSiteMenu() {
-    this._menuTitleComponent = new TitleH2View(this._siteMenuComponent.getTitle());
-
-    render(this._siteMenuContainer, this._menuTitleComponent, BEFOREEND);
-    render(this._siteMenuContainer, this._siteMenuComponent, BEFOREEND);
-  }
-
-  _renderNewEventBtn() {
-    const tripMainElement = document.querySelector(`.trip-main`);
-
-    render(tripMainElement, this._newEventBtnComponent, BEFOREEND);
   }
 }

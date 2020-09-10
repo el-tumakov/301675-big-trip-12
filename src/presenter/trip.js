@@ -113,6 +113,115 @@ export default class Trip {
     return filtredEvents;
   }
 
+  _renderTripInfo() {
+    const tripMainElement = document.querySelector(`.trip-main`);
+    const tripInfoPresenter = new TripInfoPresenter(tripMainElement);
+
+    this._tripInfoPresenter = tripInfoPresenter;
+
+    tripInfoPresenter.init(this._eventsModel.getEvents());
+  }
+
+  _renderLoading() {
+    render(this._tripContainer, this._loadingComponent, BEFOREEND);
+  }
+
+  _renderNoEvent() {
+    render(this._tripContainer, this._noEventComponent, BEFOREEND);
+  }
+
+  _renderSort() {
+    if (this._sortComponent !== null) {
+      this._sortComponent = null;
+    }
+
+    this._sortComponent = new SortView(this._currentSortType);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+
+    render(this._tripContainer, this._sortComponent, BEFOREEND);
+  }
+
+  _renderTripDays() {
+    render(this._tripContainer, this._tripDaysComponent, BEFOREEND);
+  }
+
+  _renderDay(date, counter, sortType) {
+    const dayComponent = new DayView(date, counter, sortType);
+    render(this._tripDaysComponent, dayComponent, BEFOREEND);
+  }
+
+  _renderDays() {
+    getUniqueDates(this._getEvents()).forEach((item, index) => {
+      this._renderDay(item, index, this._currentSortType);
+    });
+  }
+
+  _renderEvent(eventsListContainer, event) {
+    const eventPresenter = new EventPresenter(eventsListContainer, this._handleViewAction, this._handleModeChange);
+    eventPresenter.init(this._getDestination(), event, this._getOffers());
+
+    this._eventPresenter[event.id] = eventPresenter;
+  }
+
+  _renderEvents() {
+    this._getEvents().forEach((item) => {
+      let pointsListElement = document.querySelector(`.trip-events__list`);
+
+      if (this._currentSortType === SortType.DEFAULT) {
+        const {time} = item;
+        const timeISO = moment(time.start).format(`YYYY-MM-DD`);
+        const timeElement = this._tripContainer
+          .querySelector(`.day__date[datetime="${timeISO}"]`);
+        const dayElement = timeElement.closest(`.day`);
+
+        pointsListElement = dayElement.querySelector(`.trip-events__list`);
+      }
+
+      this._renderEvent(pointsListElement, item);
+    });
+  }
+
+  _clearTrip({resetSortType = false} = {}) {
+    this._eventNewPresenter.destroy();
+    Object
+      .values(this._eventPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._eventPresenter = {};
+
+    remove(this._noEventComponent);
+    remove(this._loadingComponent);
+    remove(this._sortComponent);
+    remove(this._tripDaysComponent);
+
+    if (resetSortType) {
+      this._currentSortType = SortType.DEFAULT;
+    }
+  }
+
+  _renderTrip() {
+    if (this._isLoading) {
+      this._renderTripInfo();
+      this._renderLoading();
+      this._newEventBtnComponent.getElement().disabled = true;
+
+      return;
+    }
+
+    const events = this._getEvents();
+    const eventsCount = events.length;
+
+    if (eventsCount === 0) {
+      this._renderNoEvent();
+
+      return;
+    }
+
+    this._renderSort();
+    this._renderTripDays();
+    this._renderDays();
+    this._renderEvents();
+  }
+
   _handleModeChange() {
     this._eventNewPresenter.destroy();
     Object
@@ -229,114 +338,5 @@ export default class Trip {
     this._currentSortType = sortType;
     this._clearTrip();
     this._renderTrip();
-  }
-
-  _renderTripInfo() {
-    const tripMainElement = document.querySelector(`.trip-main`);
-    const tripInfoPresenter = new TripInfoPresenter(tripMainElement);
-
-    this._tripInfoPresenter = tripInfoPresenter;
-
-    tripInfoPresenter.init(this._eventsModel.getEvents());
-  }
-
-  _renderLoading() {
-    render(this._tripContainer, this._loadingComponent, BEFOREEND);
-  }
-
-  _renderNoEvent() {
-    render(this._tripContainer, this._noEventComponent, BEFOREEND);
-  }
-
-  _renderSort() {
-    if (this._sortComponent !== null) {
-      this._sortComponent = null;
-    }
-
-    this._sortComponent = new SortView(this._currentSortType);
-    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
-
-    render(this._tripContainer, this._sortComponent, BEFOREEND);
-  }
-
-  _renderTripDays() {
-    render(this._tripContainer, this._tripDaysComponent, BEFOREEND);
-  }
-
-  _renderDay(date, counter, sortType) {
-    const dayComponent = new DayView(date, counter, sortType);
-    render(this._tripDaysComponent, dayComponent, BEFOREEND);
-  }
-
-  _renderDays() {
-    getUniqueDates(this._getEvents()).forEach((item, index) => {
-      this._renderDay(item, index, this._currentSortType);
-    });
-  }
-
-  _renderEvent(eventsListContainer, event) {
-    const eventPresenter = new EventPresenter(eventsListContainer, this._handleViewAction, this._handleModeChange);
-    eventPresenter.init(this._getDestination(), event, this._getOffers());
-
-    this._eventPresenter[event.id] = eventPresenter;
-  }
-
-  _renderEvents() {
-    this._getEvents().forEach((item) => {
-      let pointsListElement = document.querySelector(`.trip-events__list`);
-
-      if (this._currentSortType === SortType.DEFAULT) {
-        const {time} = item;
-        const timeISO = moment(time.start).format(`YYYY-MM-DD`);
-        const timeElement = this._tripContainer
-          .querySelector(`.day__date[datetime="${timeISO}"]`);
-        const dayElement = timeElement.closest(`.day`);
-
-        pointsListElement = dayElement.querySelector(`.trip-events__list`);
-      }
-
-      this._renderEvent(pointsListElement, item);
-    });
-  }
-
-  _clearTrip({resetSortType = false} = {}) {
-    this._eventNewPresenter.destroy();
-    Object
-      .values(this._eventPresenter)
-      .forEach((presenter) => presenter.destroy());
-    this._eventPresenter = {};
-
-    remove(this._noEventComponent);
-    remove(this._loadingComponent);
-    remove(this._sortComponent);
-    remove(this._tripDaysComponent);
-
-    if (resetSortType) {
-      this._currentSortType = SortType.DEFAULT;
-    }
-  }
-
-  _renderTrip() {
-    if (this._isLoading) {
-      this._renderTripInfo();
-      this._renderLoading();
-      this._newEventBtnComponent.getElement().disabled = true;
-
-      return;
-    }
-
-    const events = this._getEvents();
-    const eventsCount = events.length;
-
-    if (eventsCount === 0) {
-      this._renderNoEvent();
-
-      return;
-    }
-
-    this._renderSort();
-    this._renderTripDays();
-    this._renderDays();
-    this._renderEvents();
   }
 }

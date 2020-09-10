@@ -348,28 +348,6 @@ export default class EventForm extends SmartView {
     this.setDatepickers();
   }
 
-  _setInnerHandlers() {
-    this.getElement()
-      .querySelector(`.event__type-list`)
-      .addEventListener(`change`, this._typeChangeHandler);
-    this.getElement()
-      .querySelector(`.event__input--destination`)
-      .addEventListener(`change`, this._cityChangeHandler);
-    this.getElement()
-    .querySelector(`.event__input--price`)
-    .addEventListener(`change`, this._priceChangeHandler);
-    this.getElement()
-      .querySelector(`.event__favorite-btn`)
-      .addEventListener(`click`, this._favoriteClickHandler);
-
-    const offersSectionElement = this.getElement()
-      .querySelector(`.event__section--offers`);
-
-    if (offersSectionElement) {
-      offersSectionElement.addEventListener(`change`, this._offersChangeHandler);
-    }
-  }
-
   setDatepickers() {
     this._setDatepickerStart();
     this._setDatepickerEnd();
@@ -524,14 +502,36 @@ export default class EventForm extends SmartView {
     this._callback.formSubmit(EventForm.parseDataToEvent(this._data));
   }
 
-  setFormSubmitHandler(callback) {
-    this._callback.formSubmit = callback;
-    this.getElement().addEventListener(`submit`, this._formSubmitHandler);
-  }
-
   _deleteClickHandler(evt) {
     evt.preventDefault();
     this._callback.deleteClick(EventForm.parseDataToEvent(this._data));
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.event__type-list`)
+      .addEventListener(`change`, this._typeChangeHandler);
+    this.getElement()
+      .querySelector(`.event__input--destination`)
+      .addEventListener(`change`, this._cityChangeHandler);
+    this.getElement()
+    .querySelector(`.event__input--price`)
+    .addEventListener(`change`, this._priceChangeHandler);
+    this.getElement()
+      .querySelector(`.event__favorite-btn`)
+      .addEventListener(`click`, this._favoriteClickHandler);
+
+    const offersSectionElement = this.getElement()
+      .querySelector(`.event__section--offers`);
+
+    if (offersSectionElement) {
+      offersSectionElement.addEventListener(`change`, this._offersChangeHandler);
+    }
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().addEventListener(`submit`, this._formSubmitHandler);
   }
 
   setDeleteClickHandler(callback) {
