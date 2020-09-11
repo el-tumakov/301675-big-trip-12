@@ -97,7 +97,7 @@ apiDestinationWithProvider.getDestination()
   });
 
 window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`/sw.js`)
+  navigator.serviceWorker.register(`sw.js`)
     .then(() => {
       console.log(`ServiceWorker available`); // eslint-disable-line
     }).catch(() => {
