@@ -1,13 +1,14 @@
 import EventFormView from "../view/event-form.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
-import {UserAction, UpdateType} from "../const.js";
+import {UserAction, UpdateType, ButtonState} from "../const.js";
 
 const {BEFOREEND} = RenderPosition;
 
 export default class EventNew {
-  constructor(eventListContainer, changeData) {
+  constructor(eventListContainer, changeData, newEventButtonModel) {
     this._eventListContainer = eventListContainer;
     this._changeData = changeData;
+    this._newEventButtonModel = newEventButtonModel;
 
     this._eventFormComponent = null;
 
@@ -22,11 +23,12 @@ export default class EventNew {
     }
 
     this._eventFormComponent = new EventFormView(destination, offers);
+
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventFormComponent.setDeleteClickHandler(this._handleDeleteClick);
+    this._eventFormComponent.setDatepickers();
 
     render(this._eventListContainer, this._eventFormComponent, BEFOREEND);
-    this._eventFormComponent.setDatepickers();
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
@@ -36,12 +38,12 @@ export default class EventNew {
       return;
     }
 
-    document.querySelector(`.trip-main__event-add-btn`)
-      .disabled = false;
-
     remove(this._eventFormComponent);
+
     this._eventFormComponent.removeDatepickers();
     this._eventFormComponent = null;
+
+    this._newEventButtonModel.setButtonState(ButtonState.ENABLED);
 
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }

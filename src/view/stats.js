@@ -269,9 +269,10 @@ const createStatsTemplate = () => {
 };
 
 export default class Stats extends SmartView {
-  constructor(events) {
+  constructor(statsContainer, events) {
     super();
 
+    this._statsContainer = statsContainer;
     this._events = events;
 
     this._moneyChart = null;
@@ -280,6 +281,7 @@ export default class Stats extends SmartView {
   }
 
   init() {
+    this._removeStripe();
     this._setCharts();
   }
 
@@ -287,14 +289,27 @@ export default class Stats extends SmartView {
     return createStatsTemplate(this._events);
   }
 
+  destroy() {
+    this.getElement().remove();
+    this._addStripe();
+  }
+
+  _addStripe() {
+    this._statsContainer.classList.remove(`page-body__container--no-strip`);
+  }
+
+  _removeStripe() {
+    this._statsContainer.classList.add(`page-body__container--no-strip`);
+  }
+
   _setCharts() {
     const moneyCtx = document.querySelector(`.statistics__chart--money`);
     const transportCtx = document.querySelector(`.statistics__chart--transport`);
     const timeSpendCtx = document.querySelector(`.statistics__chart--time`);
 
-    moneyCtx.height = BAR_HEIGHT * 10;
-    transportCtx.height = BAR_HEIGHT * 7;
-    timeSpendCtx.height = BAR_HEIGHT * 10;
+    moneyCtx.height = BAR_HEIGHT * TYPES.length;
+    transportCtx.height = BAR_HEIGHT * TRIP_TYPES.length;
+    timeSpendCtx.height = BAR_HEIGHT * TYPES.length;
 
     this._moneyChart = renderMoneyChart(moneyCtx, this._events);
     this._transportChart = renderTransportChart(transportCtx, this._events);

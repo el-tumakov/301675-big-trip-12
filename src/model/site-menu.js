@@ -1,7 +1,7 @@
 import Observer from "../utils/observer.js";
 import {MenuItem} from "../const.js";
 
-export default class Filter extends Observer {
+export default class SiteMenu extends Observer {
   constructor() {
     super();
     this._activeItem = MenuItem.TABLE;

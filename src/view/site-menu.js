@@ -27,6 +27,22 @@ export default class SiteMenu extends AbstractView {
     return this._title;
   }
 
+  setMenuItemActive(prevMenuItem, menuItem) {
+    this.getElement().querySelector(`[data-type="${prevMenuItem}"]`)
+      .classList.remove(`trip-tabs__btn--active`);
+
+    this.getElement().querySelector(`[data-type="${menuItem}"]`)
+      .classList.add(`trip-tabs__btn--active`);
+  }
+
+  resetMenu() {
+    this.getElement().querySelector(`[data-type="${MenuItem.STATS}"]`)
+      .classList.remove(`trip-tabs__btn--active`);
+
+    this.getElement().querySelector(`[data-type="${MenuItem.TABLE}"]`)
+      .classList.add(`trip-tabs__btn--active`);
+  }
+
   _menuClickHandler(evt) {
     evt.preventDefault();
 

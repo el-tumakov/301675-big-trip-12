@@ -16,6 +16,10 @@ export default class TripInfo {
     this._renderTripPrice(events);
   }
 
+  destroy() {
+    remove(this._tripInfoComponent);
+  }
+
   _renderTripInfo(events) {
     this._tripInfoComponent = new TripInfoView(events);
 
@@ -26,9 +30,5 @@ export default class TripInfo {
     this._tripPriceComponent = new TripPriceView(events);
 
     render(this._tripInfoComponent, this._tripPriceComponent, BEFOREEND);
-  }
-
-  destroy() {
-    remove(this._tripInfoComponent);
   }
 }

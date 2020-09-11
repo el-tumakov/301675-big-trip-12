@@ -1,12 +1,12 @@
 import AbstractView from "./abstract.js";
 
-const createNewEventBtnTemplate = () => {
+const createNewEventButtonTemplate = () => {
   return (
     `<button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button">New event</button>`
   );
 };
 
-export default class NewEventBtn extends AbstractView {
+export default class NewEventButton extends AbstractView {
   constructor() {
     super();
 
@@ -14,7 +14,15 @@ export default class NewEventBtn extends AbstractView {
   }
 
   getTemplate() {
-    return createNewEventBtnTemplate();
+    return createNewEventButtonTemplate();
+  }
+
+  setDisabled() {
+    this.getElement().disabled = true;
+  }
+
+  removeDisabled() {
+    this.getElement().disabled = false;
   }
 
   _clickHandler(evt) {
