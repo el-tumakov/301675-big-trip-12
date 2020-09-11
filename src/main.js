@@ -1,8 +1,8 @@
-import NewEventBtnPresenter from "./presenter/new-event-btn.js";
+import NewEventButtonPresenter from "./presenter/new-event-button.js";
 import SiteMenuPresenter from "./presenter/site-menu.js";
 import FilterPresenter from "./presenter/filter.js";
 import TripPresenter from "./presenter/trip.js";
-import NewEventBtnModel from "./model/new-event-btn.js";
+import NewEventButtonModel from "./model/new-event-button.js";
 import EventsModel from "./model/events.js";
 import FilterModel from "./model/filter.js";
 import OffersModel from "./model/offers.js";
@@ -45,14 +45,14 @@ const apiEventsWithProvider = new Provider(api, storeEvents);
 const apiOffersWithProvider = new Provider(api, storeOffers);
 const apiDestinationWithProvider = new Provider(api, storeDestination);
 
-const newEventBtnModel = new NewEventBtnModel();
+const newEventButtonModel = new NewEventButtonModel();
 const eventsModel = new EventsModel();
 const filterModel = new FilterModel();
 const offersModel = new OffersModel();
 const destinationModel = new DestinationModel();
 const siteMenuModel = new SiteMenuModel();
 
-const newEventBtnPresenter = new NewEventBtnPresenter(tripMainElement, newEventBtnModel, siteMenuModel);
+const newEventButtonPresenter = new NewEventButtonPresenter(tripMainElement, newEventButtonModel, siteMenuModel);
 const siteMenuPresenter = new SiteMenuPresenter(tripControlsElement, siteMenuModel);
 const filterPresenter = new FilterPresenter(tripControlsElement, filterModel, eventsModel);
 const tripPresenter = new TripPresenter(
@@ -62,11 +62,11 @@ const tripPresenter = new TripPresenter(
     filterModel,
     siteMenuModel,
     destinationModel,
-    newEventBtnModel,
+    newEventButtonModel,
     apiEventsWithProvider
 );
 
-newEventBtnPresenter.init();
+newEventButtonPresenter.init();
 siteMenuPresenter.init();
 filterPresenter.init();
 tripPresenter.init();

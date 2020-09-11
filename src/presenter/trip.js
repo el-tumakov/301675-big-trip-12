@@ -24,7 +24,7 @@ export default class Trip {
       filterModel,
       siteMenuModel,
       destinationModel,
-      newEventBtnModel,
+      newEventButtonModel,
       api
   ) {
     this._tripContainer = tripContainer;
@@ -32,7 +32,7 @@ export default class Trip {
     this._eventsModel = eventsModel;
     this._filterModel = filterModel;
     this._siteMenuModel = siteMenuModel;
-    this._newEventBtnModel = newEventBtnModel;
+    this._newEventButtonModel = newEventButtonModel;
     this._destinationModel = destinationModel;
     this._eventPresenter = {};
     this._tripInfoPresenter = {};
@@ -53,7 +53,7 @@ export default class Trip {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleMenuModel = this._handleMenuModel.bind(this);
 
-    this._eventNewPresenter = new EventNewPresenter(this._tripContainer, this._handleViewAction, this._newEventBtnModel);
+    this._eventNewPresenter = new EventNewPresenter(this._tripContainer, this._handleViewAction, this._newEventButtonModel);
 
     this._siteMenuModel.addObserver(this._handleMenuModel);
   }
@@ -87,7 +87,7 @@ export default class Trip {
     this._renderDays();
     this._renderEvents();
 
-    this._newEventBtnModel.setButtonState(ButtonState.DISABLED);
+    this._newEventButtonModel.setButtonState(ButtonState.DISABLED);
   }
 
   _getOffers() {
@@ -233,7 +233,7 @@ export default class Trip {
     this._renderDays();
     this._renderEvents();
 
-    this._newEventBtnModel.setButtonState(ButtonState.ENABLED);
+    this._newEventButtonModel.setButtonState(ButtonState.ENABLED);
   }
 
   _handleModeChange() {

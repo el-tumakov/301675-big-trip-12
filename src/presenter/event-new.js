@@ -5,10 +5,10 @@ import {UserAction, UpdateType, ButtonState} from "../const.js";
 const {BEFOREEND} = RenderPosition;
 
 export default class EventNew {
-  constructor(eventListContainer, changeData, newEventBtnModel) {
+  constructor(eventListContainer, changeData, newEventButtonModel) {
     this._eventListContainer = eventListContainer;
     this._changeData = changeData;
-    this._newEventBtnModel = newEventBtnModel;
+    this._newEventButtonModel = newEventButtonModel;
 
     this._eventFormComponent = null;
 
@@ -43,7 +43,7 @@ export default class EventNew {
     this._eventFormComponent.removeDatepickers();
     this._eventFormComponent = null;
 
-    this._newEventBtnModel.setButtonState(ButtonState.ENABLED);
+    this._newEventButtonModel.setButtonState(ButtonState.ENABLED);
 
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }

@@ -1,7 +1,7 @@
 import Observer from "../utils/observer.js";
 import {ButtonState} from "../const.js";
 
-export default class NewEventBtn extends Observer {
+export default class NewEventButton extends Observer {
   constructor() {
     super();
     this._activeButtonState = ButtonState.DISABLED;
