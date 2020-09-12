@@ -29,7 +29,7 @@ const createTripInfoTemplate = (events) => {
   };
 
   const getCities = () => {
-    let cities = [];
+    const cities = [];
 
     sortEvents.forEach((item) => {
       cities.push(item.city);

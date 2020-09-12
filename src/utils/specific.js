@@ -20,7 +20,7 @@ export const getUniqueDates = (data) => {
   const dates = [];
 
   data.forEach((item) => {
-    let date = moment(item.time.start).format(`YYYY-MM-DD`);
+    const date = moment(item.time.start).format(`YYYY-MM-DD`);
 
     if (!dates.includes(date)) {
       dates.push(date);
