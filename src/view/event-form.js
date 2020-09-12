@@ -83,7 +83,7 @@ const createOfferTemplate = (offer, check, id, isDisabled) => {
 const addOfferTemplate = (event, offersData) => {
   const {type, offers, id} = event;
 
-  let offersTemplate = [];
+  const offersTemplate = [];
 
   const offer = offersData.find((item) => item.type === type);
 
