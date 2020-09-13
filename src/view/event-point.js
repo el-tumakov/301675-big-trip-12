@@ -1,7 +1,7 @@
 import he from "he";
 import AbstractView from "./abstract.js";
 import {transformPreposition} from "../utils/specific.js";
-import {toUpperCaseFirstLetter} from "../utils/common.js";
+import {capitalizeFirstLetter} from "../utils/common.js";
 import moment from "moment";
 
 const MAX_OFFERS = 3;
@@ -73,7 +73,7 @@ const createEventPointTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${toUpperCaseFirstLetter(type)} ${transformPreposition(type)} ${he.encode(city)}</h3>
+        <h3 class="event__title">${capitalizeFirstLetter(type)} ${transformPreposition(type)} ${he.encode(city)}</h3>
 
         <div class="event__schedule">
           <p class="event__time">

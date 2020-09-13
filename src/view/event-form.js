@@ -1,6 +1,6 @@
 import SmartView from "./smart.js";
 import {transformPreposition} from "../utils/specific.js";
-import {toUpperCaseFirstLetter, getToday} from "../utils/common.js";
+import {capitalizeFirstLetter as capitalizeFirstLetter, getToday} from "../utils/common.js";
 import {TRIP_TYPES, STOP_TYPES} from "../const.js";
 import flatpickr from "flatpickr";
 import moment from "moment";
@@ -52,7 +52,7 @@ const createRadioTemplate = (event, types, isDisabled) => {
             ${event.type === current ? `checked` : ``}
             ${isDisabled ? `disabled` : ``}
           />
-          <label class="event__type-label  event__type-label--${current}" for="event-type-${current}-${event.id}">${toUpperCaseFirstLetter(current)}</label>
+          <label class="event__type-label  event__type-label--${current}" for="event-type-${current}-${event.id}">${capitalizeFirstLetter(current)}</label>
         </div>`
       );
     }, ``)
@@ -205,7 +205,7 @@ const createEventFormTemplate = (event, offers, destination) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-${id}">
-          ${toUpperCaseFirstLetter(type)} ${transformPreposition(type)}
+          ${capitalizeFirstLetter(type)} ${transformPreposition(type)}
           </label>
           <input
             class="event__input  event__input--destination"
