@@ -166,9 +166,9 @@ export default class Trip {
   }
 
   _renderEvents() {
-    this._getEvents().forEach((item) => {
-      let pointsListElement = document.querySelector(`.trip-events__list`);
+    let pointsListElement = document.querySelector(`.trip-events__list`);
 
+    this._getEvents().forEach((item) => {
       if (this._currentSortType === SortType.DEFAULT) {
         const {time} = item;
         const timeISO = moment(time.start).format(`YYYY-MM-DD`);
