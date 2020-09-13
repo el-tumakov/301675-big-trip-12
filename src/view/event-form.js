@@ -93,8 +93,8 @@ const addOfferTemplate = (event, offersData) => {
     offersOfType.forEach((item) => {
       let check = ``;
 
-      for (let i = 0; i < offers.length; i++) {
-        if (offers[i].title === item.title) {
+      for (const offerItem of offers) {
+        if (offerItem.title === item.title) {
           check = `checked`;
           break;
         }
