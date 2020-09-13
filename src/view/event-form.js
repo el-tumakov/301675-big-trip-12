@@ -83,7 +83,7 @@ const createOfferTemplate = (offer, check, id, isDisabled) => {
 const addOfferTemplate = (event, offersData) => {
   const {type, offers, id} = event;
 
-  const offersTemplate = [];
+  const offersTemplates = [];
 
   const offer = offersData.find((item) => item.type === type);
 
@@ -100,11 +100,11 @@ const addOfferTemplate = (event, offersData) => {
         }
       }
 
-      offersTemplate.push(createOfferTemplate(item, check, id));
+      offersTemplates.push(createOfferTemplate(item, check, id));
     });
   }
 
-  return offersTemplate.join(``);
+  return offersTemplates.join(``);
 };
 
 const createOffersSectionTemplate = (event, offers) => {
