@@ -9,5 +9,5 @@ const isPastDate = (date) => {
 export const filter = {
   [FilterType.EVERYTHING]: (events) => events,
   [FilterType.FUTURE]: (events) => events.filter((event) => !isPastDate(event.time.start)),
-  [FilterType.PAST]: (events) => events.filter((event) => isPastDate(event.time.start))
+  [FilterType.PAST]: (events) => events.filter((event) => isPastDate(event.time.end))
 };
