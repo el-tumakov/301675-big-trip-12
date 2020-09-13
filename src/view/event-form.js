@@ -1,6 +1,6 @@
 import SmartView from "./smart.js";
 import {transformPreposition} from "../utils/specific.js";
-import {capitalizeFirstLetter as capitalizeFirstLetter, getToday} from "../utils/common.js";
+import {capitalizeFirstLetter, getToday} from "../utils/common.js";
 import {TRIP_TYPES, STOP_TYPES} from "../const.js";
 import flatpickr from "flatpickr";
 import moment from "moment";
