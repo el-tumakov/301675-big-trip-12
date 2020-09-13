@@ -116,6 +116,7 @@ export default class Event {
   }
 
   _replaceFormToEvent() {
+    this._eventFormComponent.reset(this._event);
     replace(this._eventComponent, this._eventFormComponent);
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
@@ -125,7 +126,6 @@ export default class Event {
   _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
-      this._eventFormComponent.reset(this._event);
       this._replaceFormToEvent();
     }
   }
@@ -135,7 +135,6 @@ export default class Event {
   }
 
   _handleCloseButtonClick() {
-    this._eventFormComponent.reset(this._event);
     this._replaceFormToEvent();
   }
 
