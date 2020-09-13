@@ -267,9 +267,9 @@ const createEventFormTemplate = (event, offers, destination) => {
           class="event__save-btn  btn  btn--blue"
           type="submit"
           ${isSubmitDisabled || isDisabled ? `disabled` : ``}
-        >${isSaving ? `saving...` : `save`}</button>
+        >${isSaving ? `Saving...` : `Save`}</button>
         <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>
-          ${isDeleting ? `deleting...` : `delete`}
+          ${id === undefined ? `Cancel` : `${isDeleting ? `Deleting...` : `Delete`}`}
         </button>
 
         <input
