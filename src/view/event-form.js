@@ -484,6 +484,11 @@ export default class EventForm extends SmartView {
 
   _priceChangeHandler(evt) {
     evt.preventDefault();
+
+    if (!Number.isInteger(+evt.target.value)) {
+      return;
+    }
+
     this.updateData({
       price: evt.target.value
     }, true);
