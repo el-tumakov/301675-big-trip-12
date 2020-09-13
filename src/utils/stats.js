@@ -1,33 +1,19 @@
 import moment from "moment";
 
 export const getMoney = (events, type) => {
-  let sum = 0;
-
-  events.forEach((item) => {
-    if (item.type === type) {
-      sum += item.price;
-    }
-  });
-
-  return sum;
+  return events.reduce((sum, item) => {
+    return item.type === type ? (sum += item.price) : sum;
+  }, 0);
 };
 
 export const getTransport = (events, type) => {
-  let count = 0;
-
-  events.forEach((item) => {
-    if (item.type === type) {
-      count++;
-    }
-  });
-
-  return count;
+  return events.reduce((count, item) => {
+    return item.type === type ? count + 1 : count;
+  }, 0);
 };
 
 export const getTime = (events, type) => {
-  let time = 0;
-
-  events.forEach((item) => {
+  return events.reduce((time, item) => {
     if (item.type === type) {
       const timeStart = moment(item.time.start);
       const timeEnd = moment(item.time.end);
@@ -36,7 +22,7 @@ export const getTime = (events, type) => {
 
       time += duration;
     }
-  });
 
-  return time;
+    return time;
+  }, 0);
 };
