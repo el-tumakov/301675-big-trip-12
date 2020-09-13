@@ -1,6 +1,5 @@
 import SiteMenuView from "../view/site-menu.js";
 import TitleH2View from "../view/title-h2.js";
-import FilterView from "../view/filter.js";
 import {render, RenderPosition} from "../utils/render.js";
 import {MenuItem} from "../const.js";
 
@@ -12,7 +11,6 @@ export default class SiteMenu {
     this._siteMenuModel = siteMenuModel;
 
     this._siteMenuComponent = new SiteMenuView();
-    this._filterComponent = new FilterView();
 
     this._handleSiteMenuModel = this._handleSiteMenuModel.bind(this);
     this._handleSiteMenuChange = this._handleSiteMenuChange.bind(this);

@@ -11,8 +11,4 @@ export default class NewEventButton extends Observer {
     this._activeButtonState = buttonState;
     this._notify(buttonState);
   }
-
-  getButtonState() {
-    return this._activeButtonState;
-  }
 }
