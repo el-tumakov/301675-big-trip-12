@@ -30,6 +30,7 @@ export default class Event {
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
+    this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
@@ -45,6 +46,7 @@ export default class Event {
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventFormComponent.setDeleteClickHandler(this._handleDeleteClick);
+    this._eventFormComponent.setCloseButtonClickHandler(this._handleCloseButtonClick);
 
     if (prevEventComponent === null || prevEventFormComponent === null) {
       render(this._eventsListContainer, this._eventComponent, BEFOREEND);
@@ -130,6 +132,11 @@ export default class Event {
 
   _handleEditClick() {
     this._replaceEventToForm();
+  }
+
+  _handleCloseButtonClick() {
+    this._eventFormComponent.reset(this._event);
+    this._replaceFormToEvent();
   }
 
   _handleFormSubmit(update) {

@@ -14,6 +14,7 @@ export default class EventNew {
 
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
+    this._handleCloseButtonClick = this._handleCloseButtonClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
@@ -26,6 +27,7 @@ export default class EventNew {
 
     this._eventFormComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventFormComponent.setDeleteClickHandler(this._handleDeleteClick);
+    this._eventFormComponent.setCloseButtonClickHandler(this._handleCloseButtonClick);
     this._eventFormComponent.setDatepickers();
 
     render(this._eventListContainer, this._eventFormComponent, BEFOREEND);
@@ -76,6 +78,10 @@ export default class EventNew {
   }
 
   _handleDeleteClick() {
+    this.destroy();
+  }
+
+  _handleCloseButtonClick() {
     this.destroy();
   }
 

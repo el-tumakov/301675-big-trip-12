@@ -329,6 +329,7 @@ export default class EventForm extends SmartView {
     this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
+    this._closeButtonClickHandler = this._closeButtonClickHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -345,6 +346,7 @@ export default class EventForm extends SmartView {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteClickHandler(this._callback.deleteClick);
+    this.setCloseButtonClickHandler(this._callback.closeButtonClick);
     this.setDatepickers();
   }
 
@@ -512,6 +514,11 @@ export default class EventForm extends SmartView {
     this._callback.deleteClick(EventForm.parseDataToEvent(this._data));
   }
 
+  _closeButtonClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.closeButtonClick();
+  }
+
   _setInnerHandlers() {
     this.getElement()
       .querySelector(`.event__type-list`)
@@ -544,6 +551,11 @@ export default class EventForm extends SmartView {
     this.getElement()
       .querySelector(`.event__reset-btn`)
       .addEventListener(`click`, this._deleteClickHandler);
+  }
+
+  setCloseButtonClickHandler(callback) {
+    this._callback.closeButtonClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._closeButtonClickHandler);
   }
 
   static parseEventToData(event) {
